@@ -62,12 +62,10 @@ RUN mkdir -p /var/www/html/uploads/avatars \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/uploads
 
-# Railway injects PORT at runtime — fix MPM at startup then launch Apache
+# Fix MPM at startup, then run Apache on port 80 (Railway routes to 80)
 CMD ["/bin/sh", "-c", \
     "find /etc/apache2/mods-enabled/ -name 'mpm_*.load' -delete; \
      find /etc/apache2/mods-enabled/ -name 'mpm_*.conf' -delete; \
      ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load; \
      ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf; \
-     sed -i \"s/Listen 80/Listen ${PORT:-80}/\" /etc/apache2/ports.conf && \
-     sed -i \"s/:80>/:${PORT:-80}>/\" /etc/apache2/sites-enabled/000-default.conf && \
      apache2-foreground"]
