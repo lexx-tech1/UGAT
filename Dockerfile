@@ -27,8 +27,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         bcmath \
         opcache
 
-# Fix "More than one MPM loaded" — disable event/worker, keep prefork (required for mod_php)
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+# Fix "More than one MPM loaded" — remove event/worker symlinks directly, then enable prefork
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load \
+          /etc/apache2/mods-enabled/mpm_event.conf \
+          /etc/apache2/mods-enabled/mpm_worker.load \
+          /etc/apache2/mods-enabled/mpm_worker.conf \
     && a2enmod mpm_prefork
 
 # Enable Apache mod_rewrite
