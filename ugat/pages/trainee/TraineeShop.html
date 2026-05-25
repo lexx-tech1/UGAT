@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farm Shop — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="TraineeShop.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav">
+    <div class="nav-logo">
+      <a href="TraineeDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="TraineeDashboard.html" class="nav-link">Dashboard</a>
+      <a href="TraineeWorkshops.html" class="nav-link">My Workshops</a>
+      <a href="TraineeShop.html"      class="nav-link active">Farm Shop</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="https://i.pravatar.cc/36?img=5" alt="Lina" class="user-avatar">
+        <span class="user-dropdown-name">Lina <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=5" alt="Lina" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Angelina Reyes</div>
+            <div class="user-dropdown-role">Trainee</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="profile.php" class="user-dropdown-item">My Profile</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+      <button class="cart-btn" onclick="switchShopTab('cart', document.querySelector('[data-stab=cart]'))">
+        🛒 <span class="cart-badge" id="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="app-content">
+
+    <div class="page-header">
+      <div>
+        <h2 class="page-title" id="shop-page-title">Farm Shop</h2>
+        <p class="page-sub" id="shop-page-sub">Browse and order farm products and training kits from UGAT Integrated Farm</p>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="pm-tab-bar">
+      <button class="pm-tab active" data-stab="shop"   onclick="switchShopTab('shop',   this)">Shop</button>
+      <button class="pm-tab"        data-stab="cart"   onclick="switchShopTab('cart',   this)">Cart <span id="cart-tab-count"></span></button>
+      <button class="pm-tab"        data-stab="orders" onclick="switchShopTab('orders', this)">My Orders</button>
+    </div>
+
+    <!-- ══ SHOP TAB ══ -->
+    <div id="stab-shop">
+      <div class="shop-filters">
+        <div style="display:flex;gap:0.5rem">
+          <button class="tab-btn active" onclick="filterShop('all',this)">All Products</button>
+          <button class="tab-btn" onclick="filterShop('farm',this)">Farm Products</button>
+          <button class="tab-btn" onclick="filterShop('kit',this)">Training Kits</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <input type="text" id="shop-search" class="search-input" placeholder="Search..." oninput="renderShop()" style="max-width:220px">
+          <select class="filter-select" id="shop-cat" onchange="renderShop()">
+            <option value="">All Categories</option>
+            <option value="farm">Farm Products</option>
+            <option value="kit">Training Kits</option>
+          </select>
+          <select class="filter-select" id="shop-sort" onchange="renderShop()">
+            <option value="newest">Sort: Newest</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="name">Name A–Z</option>
+          </select>
+        </div>
+      </div>
+      <div id="shop-product-list"></div>
+    </div>
+
+    <!-- ══ CART TAB ══ -->
+    <div id="stab-cart" style="display:none">
+      <div id="cart-content"></div>
+    </div>
+
+    <!-- ══ ORDERS TAB ══ -->
+    <div id="stab-orders" style="display:none">
+      <div id="orders-content"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRODUCT DETAIL MODAL
+════════════════════════════════════════════════════════════ -->
+<div id="product-modal" class="modal-overlay" onclick="closeModalOutside(event,'product-modal')">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="pm-title">Product</h3>
+      <button class="modal-close" onclick="closeModal('product-modal')">✕</button>
+    </div>
+    <div id="pm-body" style="padding:1.5rem"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ADDRESS SELECTOR MODAL (Shopee-style)
+════════════════════════════════════════════════════════════ -->
+<div id="address-modal" class="modal-overlay" onclick="closeModalOutside(event,'address-modal')">
+  <div class="modal-box" style="max-width:500px">
+    <div class="modal-header">
+      <h3>My Address</h3>
+      <button class="modal-close" onclick="closeModal('address-modal')">✕</button>
+    </div>
+    <div id="addr-modal-body" style="padding:1rem;max-height:60vh;overflow-y:auto"></div>
+    <div style="padding:1rem;border-top:1px solid var(--color-border)">
+      <button class="btn-primary" style="width:100%" onclick="openAddressForm()">+ Add New Address</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ADD / EDIT ADDRESS FORM MODAL
+════════════════════════════════════════════════════════════ -->
+<div id="address-form-modal" class="modal-overlay" onclick="closeModalOutside(event,'address-form-modal')">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="addr-form-title">Add New Address</h3>
+      <button class="modal-close" onclick="closeModal('address-form-modal');openModal('address-modal')">✕</button>
+    </div>
+    <div style="padding:1.25rem;max-height:70vh;overflow-y:auto">
+      <input type="hidden" id="af-id">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="af-fullname" class="form-input" placeholder="Full name">
+        </div>
+        <div class="form-group">
+          <label>Contact Number *</label>
+<input type="text" id="af-contact" class="form-input" 
+       placeholder="+63 9XX XXX XXXX"
+       value="+63 9"
+       autocomplete="off"
+       oninput="enforcePhonePrefix(this)"
+       onfocus="if(this.value==='+63 9')this.setSelectionRange(5,5)">   </div>
+      </div>
+      <div class="form-group">
+        <label>Address Line * <span style="font-weight:400;color:#888">(House no., Street, Purok)</span></label>
+        <input type="text" id="af-line" class="form-input" placeholder="e.g. Purok 4, Larap Street">
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Region</label>
+          <select id="af-region" class="form-input" onchange="loadProvinceOptions(this.value)">
+            <option value="">Select Region</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Province</label>
+          <select id="af-province" class="form-input" onchange="loadCityOptions(this.value)">
+            <option value="">Select Province</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>City / Municipality</label>
+          <select id="af-city" class="form-input" onchange="loadBarangayOptions(this.value)">
+            <option value="">Select City/Municipality</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Barangay</label>
+          <select id="af-barangay" class="form-input">
+            <option value="">Select Barangay</option>
+          </select>
+        </div>
+      </div>
+      <label class="form-check-label" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;cursor:pointer">
+        <input type="checkbox" id="af-default"> Set as default address
+      </label>
+      <div style="display:flex;gap:0.75rem;margin-top:1.25rem">
+        <button class="btn-outline" style="flex:1" onclick="closeModal('address-form-modal');openModal('address-modal')">← Back</button>
+        <button class="btn-primary" style="flex:1" onclick="saveAddressForm()">Save Address</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ORDER SUCCESS MODAL
+════════════════════════════════════════════════════════════ -->
+<div id="order-success-modal" class="modal-overlay" onclick="closeModalOutside(event,'order-success-modal')">
+  <div class="modal-box" style="max-width:440px;text-align:center;padding:2rem">
+    <div style="font-size:3rem;margin-bottom:0.75rem">🛍️</div>
+    <h3 style="font-weight:800;margin-bottom:0.5rem">Order Placed!</h3>
+    <p id="order-success-msg" style="font-size:var(--text-body-sm);color:var(--color-text-mid);margin-bottom:1.25rem"></p>
+    <button class="btn-primary" onclick="closeModal('order-success-modal');switchShopTab('orders',document.querySelector('[data-stab=orders]'))">View My Orders</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="TraineeShop.js"></script>
+<script src="nav_session.js"></script>
+</body>
+</html>

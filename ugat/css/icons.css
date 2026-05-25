@@ -1,0 +1,248 @@
+/* UGAT Icon System - Green & White Icons */
+
+:root {
+    --icon-color-success: #22c55e;  /* Green for success */
+    --icon-color-error: #ef4444;    /* Red for error */
+    --icon-color-warning: #f97316;  /* Orange for warning */
+    --icon-color-info: #3b82f6;     /* Blue for info */
+    --icon-size-default: 1em;
+}
+
+/* Icon styles - using Unicode symbols */
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 0.3em;
+}
+
+/* Success icon */
+.icon-check {
+    color: var(--icon-color-success);
+}
+.icon-check::before {
+    content: "✓";
+}
+
+/* Error/fail icon */
+.icon-x {
+    color: var(--icon-color-error);
+}
+.icon-x::before {
+    content: "✕";
+}
+
+/* Warning icon */
+.icon-warning {
+    color: var(--icon-color-warning);
+}
+.icon-warning::before {
+    content: "⚠";
+}
+
+/* Rocket/launch icon */
+.icon-rocket {
+    color: var(--icon-color-success);
+}
+.icon-rocket::before {
+    content: "▶";
+}
+
+/* Target/goal icon */
+.icon-target {
+    color: var(--icon-color-info);
+}
+.icon-target::before {
+    content: "◉";
+}
+
+/* Chart/dashboard icon */
+.icon-chart {
+    color: var(--icon-color-info);
+}
+.icon-chart::before {
+    content: "📊";
+}
+
+/* Checklist icon */
+.icon-checklist {
+    color: var(--icon-color-info);
+}
+.icon-checklist::before {
+    content: "☐";
+}
+
+/* Tools/settings icon */
+.icon-tool {
+    color: var(--icon-color-info);
+}
+.icon-tool::before {
+    content: "⚙";
+}
+
+/* Test/beaker icon */
+.icon-test {
+    color: var(--icon-color-info);
+}
+.icon-test::before {
+    content: "ℹ";
+}
+
+/* Email/envelope icon */
+.icon-email {
+    color: var(--icon-color-info);
+}
+.icon-email::before {
+    content: "✉";
+}
+
+/* Celebrate/party icon */
+.icon-celebrate {
+    color: var(--icon-color-success);
+}
+.icon-celebrate::before {
+    content: "✤";
+}
+
+/* Phone icon */
+.icon-phone {
+    color: var(--icon-color-info);
+}
+.icon-phone::before {
+    content: "☎";
+}
+
+/* Folder icon */
+.icon-folder {
+    color: var(--icon-color-info);
+}
+.icon-folder::before {
+    content: "⊞";
+}
+
+/* Document icon */
+.icon-doc {
+    color: var(--icon-color-info);
+}
+.icon-doc::before {
+    content: "⊟";
+}
+
+/* New/plus icon */
+.icon-new {
+    color: var(--icon-color-success);
+}
+.icon-new::before {
+    content: "+";
+}
+
+/* Star icon */
+.icon-star {
+    color: #fbbf24;
+}
+.icon-star::before {
+    content: "★";
+}
+
+/* Lightbulb/idea icon */
+.icon-idea {
+    color: #fbbf24;
+}
+.icon-idea::before {
+    content: "◆";
+}
+
+/* Key icon */
+.icon-key {
+    color: var(--icon-color-info);
+}
+.icon-key::before {
+    content: "🔑";
+}
+
+/* Lightning/fast icon */
+.icon-lightning {
+    color: var(--icon-color-warning);
+}
+.icon-lightning::before {
+    content: "⚡";
+}
+
+/* Stats icon */
+.icon-stats {
+    color: var(--icon-color-info);
+}
+.icon-stats::before {
+    content: "▲";
+}
+
+/* Lock/secure icon */
+.icon-lock {
+    color: var(--icon-color-info);
+}
+.icon-lock::before {
+    content: "🔒";
+}
+
+/* Sparkle icon */
+.icon-sparkle {
+    color: var(--icon-color-success);
+}
+.icon-sparkle::before {
+    content: "✨";
+}
+
+/* Globe icon */
+.icon-globe {
+    color: var(--icon-color-info);
+}
+.icon-globe::before {
+    content: "◯";
+}
+
+/* Search icon */
+.icon-search {
+    color: var(--icon-color-info);
+}
+.icon-search::before {
+    content: "⊙";
+}
+
+/* Gift icon */
+.icon-gift {
+    color: var(--icon-color-success);
+}
+.icon-gift::before {
+    content: "❏";
+}
+
+/* Hammer icon */
+.icon-hammer {
+    color: var(--icon-color-info);
+}
+.icon-hammer::before {
+    content: "▬";
+}
+
+/* Timer/clock icon */
+.icon-timer {
+    color: var(--icon-color-info);
+}
+.icon-timer::before {
+    content: "◐";
+}
+
+/* Accessibility for screen readers */
+.icon[data-label]::after {
+    content: attr(data-label);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

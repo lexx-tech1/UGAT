@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.app-nav')?.remove();
+      document.querySelector('.app-layout').style.display = 'block';
+      document.querySelector('.inv-shell').style.padding = '0';
+    });
+  }
+</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminInventory.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html" class="nav-link">Dashboard</a>
+      <a href="AdminWorkshops.html" class="nav-link">Programs</a>
+      <a href="AdminInventory.html" class="nav-link active">Inventory</a>
+      <a href="AdminReports.html"   class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)" id="user-trigger">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Maria Santos</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="inv-shell">
+
+    <div class="inv-page-header">
+      <div>
+        <h2 class="page-title">Inventory Management</h2>
+        <p class="page-sub">Farm products &amp; training kits — stock tracking, movements, and orders</p>
+      </div>
+      <div class="inv-header-actions" id="inv-header-actions"></div>
+    </div>
+<div class="inv-tab-bar">
+    <button class="inv-tab active" data-tab="overview"     onclick="switchInvTab('overview',     this)">Overview</button>
+    <button class="inv-tab"        data-tab="products"     onclick="switchInvTab('products',     this)">Products</button>
+    <button class="inv-tab"        data-tab="shoporders"   onclick="switchInvTab('shoporders',   this)">🛍 Shop Orders</button>
+    <button class="inv-tab"        data-tab="transactions" onclick="switchInvTab('transactions', this)">Transactions</button>
+    <button class="inv-tab"        data-tab="orders"       onclick="switchInvTab('orders',       this)">Purchase Orders</button>
+    <button class="inv-tab"        data-tab="reports"      onclick="switchInvTab('reports',      this)">Reports</button>
+</div>
+
+    <div class="alert-banner" id="stock-alert" style="display:none"></div>
+
+    <!-- TAB 1 — OVERVIEW -->
+<div id="tab-overview" class="inv-tab-content top-tab">
+      <div class="stat-cards" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card"><div class="stat-num" id="ov-total">—</div><div class="stat-label">Total SKUs</div><div class="stat-sub">Unique items</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="ov-instock">—</div><div class="stat-label">In Stock</div><div class="stat-sub">Sufficient levels</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="ov-low">—</div><div class="stat-label">Low Stock</div><div class="stat-sub">Needs restocking</div></div>
+        <div class="stat-card red"><div class="stat-num" id="ov-out">—</div><div class="stat-label">Out of Stock</div><div class="stat-sub">Restock immediately</div></div>
+        <div class="stat-card" style="background:#f0f4ff;border-color:#c7d6fb"><div class="stat-num" id="ov-value" style="color:#1a56db">—</div><div class="stat-label">Total Stock Value</div><div class="stat-sub">At current prices</div></div>
+      </div>
+      <div class="ov-grid">
+        <div class="inv-card">
+          <div class="inv-card-header"><h3>Stock Health</h3><span class="inv-card-sub">All items by level</span></div>
+          <div id="ov-health-list" class="ov-health-list"></div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-card-header"><h3>Recent Movements</h3><button class="btn-outline-sm" onclick="switchInvTab('transactions', document.querySelector('[data-tab=transactions]'))">View All</button></div>
+          <div id="ov-recent-list" class="ov-recent-list"></div>
+        </div>
+      </div>
+      <div class="inv-card" style="margin-top:1.25rem">
+        <div class="inv-card-header">
+          <h3>⚠ Reorder Alerts</h3>
+          <button class="btn-primary" style="font-size:var(--text-caption);padding:0.35rem 0.9rem" onclick="switchInvTab('orders', document.querySelector('[data-tab=orders]'))">+ Raise Purchase Order</button>
+        </div>
+        <div id="ov-alerts-list"></div>
+      </div>
+    </div>
+<!-- TAB 2 — PRODUCTS -->
+<div id="tab-products" class="inv-tab-content top-tab" style="display:none">
+      <div class="inv-filter-row">
+        <div class="inv-filter-left">
+          <input type="text" id="prod-search" class="search-input" placeholder="Search products…" oninput="renderProducts()">
+          <select class="filter-select" id="prod-cat" onchange="renderProducts()">
+            <option value="">All Categories</option><option value="farm">Farm Products</option><option value="kit">Training Kits</option>
+          </select>
+          <select class="filter-select" id="prod-status" onchange="renderProducts()">
+            <option value="">All Status</option><option value="instock">In Stock</option><option value="low">Low Stock</option><option value="out">Out of Stock</option>
+          </select>
+          <select class="filter-select" id="prod-sort" onchange="renderProducts()">
+            <option value="newest">Sort: Newest First</option>
+            <option value="name">Name A–Z</option>
+            <option value="stock-desc">Stock: High → Low</option>
+            <option value="stock-asc">Stock: Low → High</option>
+            <option value="value-desc">Value: High → Low</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="products-table">
+          <thead>
+            <tr>
+              <th>Image</th><th>Item</th><th>SKU</th><th>Category</th><th>Unit Price</th>
+              <th>On Hand</th><th>Weight (kg)</th><th>Reorder Pt.</th><th>Stock Value</th>
+              <th>Stock Level</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody"></tbody>
+        </table>
+      </div>
+      <p class="light-txt" id="products-count" style="padding:0.75rem 0"></p>
+    </div>
+
+<div id="tab-shoporders" class="inv-tab-content top-tab" style="display:none">
+
+  <!-- Shop Orders inner tabs -->
+  <div class="inv-tab-bar" style="margin-bottom:1rem">
+    <button class="inv-tab active" data-sotab="so-overview"  onclick="switchSOTab('so-overview', this)">Overview</button>
+    <button class="inv-tab"        data-sotab="so-all"       onclick="switchSOTab('so-all',      this)">All Orders</button>
+    <button class="inv-tab"        data-sotab="so-pending"   onclick="switchSOTab('so-pending',  this)">Pending <span id="badge-pending"   style="display:none;align-items:center;justify-content:center;background:#e53e3e;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+    <button class="inv-tab"        data-sotab="so-confirmed" onclick="switchSOTab('so-confirmed',this)">Confirmed <span id="badge-confirmed" style="display:none;align-items:center;justify-content:center;background:#1a73e8;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+    <button class="inv-tab"        data-sotab="so-preparing" onclick="switchSOTab('so-preparing',this)">Preparing <span id="badge-preparing" style="display:none;align-items:center;justify-content:center;background:#e65100;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+    <button class="inv-tab"        data-sotab="so-otd"       onclick="switchSOTab('so-otd',      this)">Out for Delivery <span id="badge-otd"       style="display:none;align-items:center;justify-content:center;background:#6a1b9a;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+    <button class="inv-tab"        data-sotab="so-delivered" onclick="switchSOTab('so-delivered',this)">Delivered <span id="badge-delivered" style="display:none;align-items:center;justify-content:center;background:#4B8423;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+<button class="inv-tab" data-sotab="so-cancelled" onclick="switchSOTab('so-cancelled',this)">Cancelled <span id="badge-cancelled" style="display:none;align-items:center;justify-content:center;background:#e53e3e;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:4px;vertical-align:middle;line-height:1"></span></button>
+  
+  </div>
+  <!-- Overview -->
+  <div id="so-tab-overview" class="inv-tab-content">
+    <div class="stat-cards" style="grid-template-columns:repeat(5,1fr)">
+      <div class="stat-card yellow">
+        <div class="stat-num" id="so-ov-pending">—</div>
+        <div class="stat-label">Pending</div>
+        <div class="stat-sub">Needs attention</div>
+      </div>
+      <div class="stat-card" style="background:#e8f4ff;border-color:#c5def8">
+        <div class="stat-num" id="so-ov-confirmed" style="color:#1a73e8">—</div>
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-sub">Processing</div>
+      </div>
+      <div class="stat-card" style="background:#fff3e0;border-color:#ffcc80">
+        <div class="stat-num" id="so-ov-preparing" style="color:#e65100">—</div>
+        <div class="stat-label">Preparing</div>
+        <div class="stat-sub">Being packed</div>
+      </div>
+      <div class="stat-card" style="background:#f3e5f5;border-color:#ce93d8">
+        <div class="stat-num" id="so-ov-otd" style="color:#6a1b9a">—</div>
+        <div class="stat-label">Out for Delivery</div>
+        <div class="stat-sub">On the way</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-num" id="so-ov-delivered">—</div>
+        <div class="stat-label">Delivered</div>
+        <div class="stat-sub">Completed</div>
+      </div>
+    </div>
+    <div class="ov-grid" style="margin-top:1.25rem">
+      <div class="inv-card">
+        <div class="inv-card-header"><h3>Revenue Summary</h3></div>
+        <div id="so-ov-revenue" style="padding:0.5rem 0"></div>
+      </div>
+      <div class="inv-card">
+        <div class="inv-card-header">
+          <h3>Recent Orders</h3>
+          <button class="btn-outline-sm" onclick="switchSOTab('so-all', document.querySelector('[data-sotab=so-all]'))">View All</button>
+        </div>
+        <div id="so-ov-recent"></div>
+      </div>
+    </div>
+    <div class="inv-card" style="margin-top:1.25rem">
+      <div class="inv-card-header">
+        <h3>⚠ Pending Orders — Action Required</h3>
+        <button class="btn-primary" style="font-size:var(--text-caption);padding:0.35rem 0.9rem"
+                onclick="switchSOTab('so-pending', document.querySelector('[data-sotab=so-pending]'))">
+          View All Pending
+        </button>
+      </div>
+      <div id="so-ov-pending-list"></div>
+    </div>
+  </div>
+
+  <!-- All Orders -->
+  <div id="so-tab-all" class="inv-tab-content" style="display:none">
+    <div class="inv-filter-row">
+      <div class="inv-filter-left">
+        <input type="text" id="so-search" class="search-input" placeholder="Search order, trainee…" oninput="renderSOTable()">
+        <select class="filter-select" id="so-status-filter" onchange="renderSOTable()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="preparing">Preparing</option>
+          <option value="out_for_delivery">Out for Delivery</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select class="filter-select" id="so-payment-filter" onchange="renderSOTable()">
+          <option value="">All Payment</option>
+          <option value="cod">COD</option>
+          <option value="gcash">GCash</option>
+        </select>
+        <select class="filter-select" id="so-sort" onchange="renderSOTable()">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="total-desc">Total: High → Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th><th>Date</th><th>Trainee</th><th>Items</th>
+            <th>Total</th><th>Payment</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="so-all-tbody"></tbody>
+      </table>
+    </div>
+    <p class="light-txt" id="so-all-count" style="padding:0.75rem 0"></p>
+  </div>
+
+  <!-- Status tabs -->
+  <div id="so-tab-pending"   class="inv-tab-content" style="display:none"><div id="so-list-pending"></div></div>
+  <div id="so-tab-confirmed" class="inv-tab-content" style="display:none"><div id="so-list-confirmed"></div></div>
+  <div id="so-tab-preparing" class="inv-tab-content" style="display:none"><div id="so-list-preparing"></div></div>
+  <div id="so-tab-otd"       class="inv-tab-content" style="display:none"><div id="so-list-otd"></div></div>
+  <div id="so-tab-delivered" class="inv-tab-content" style="display:none"><div id="so-list-delivered"></div></div>
+  <div id="so-tab-cancelled" class="inv-tab-content" style="display:none"><div id="so-list-cancelled"></div></div>
+
+</div><!-- /tab-shoporders -->
+
+    <!-- TAB 3 — TRANSACTIONS -->
+<div id="tab-transactions" class="inv-tab-content top-tab" style="display:none">
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.25rem">
+        <div class="stat-card"><div class="stat-num" id="tx-total-count">—</div><div class="stat-label">Total Movements</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="tx-in-count">—</div><div class="stat-label">Stock In</div><div class="stat-sub">Total receipts</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="tx-out-count">—</div><div class="stat-label">Stock Out</div><div class="stat-sub">Total releases</div></div>
+        <div class="stat-card" style="background:#f0f4ff;border-color:#c7d6fb"><div class="stat-num" id="tx-value" style="color:#1a56db">—</div><div class="stat-label">Value Moved (Out)</div><div class="stat-sub">At unit price</div></div>
+      </div>
+      <div class="inv-filter-row">
+        <div class="inv-filter-left">
+          <input type="text" id="tx-search" class="search-input" placeholder="Search item or note…" oninput="renderTransactions()">
+          <select class="filter-select" id="tx-type" onchange="renderTransactions()">
+            <option value="">All Types</option><option value="in">Stock In only</option><option value="out">Stock Out only</option><option value="po">Purchase Order receipt</option><option value="adj">Adjustment</option>
+          </select>
+          <select class="filter-select" id="tx-item" onchange="renderTransactions()"><option value="">All Items</option></select>
+          <select class="filter-select" id="tx-sort" onchange="renderTransactions()">
+            <option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="qty-desc">Qty: High → Low</option>
+          </select>
+        </div>
+        <button class="btn-secondary" onclick="exportTransactions()">Export CSV</button>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Date &amp; Time</th><th>Transaction ID</th><th>Item</th><th>Type</th><th>Qty</th><th>Before</th><th>After</th><th>Unit Price</th><th>Value</th><th>Reference / Note</th><th>Recorded By</th></tr>
+          </thead>
+          <tbody id="tx-tbody"></tbody>
+        </table>
+      </div>
+      <p class="light-txt" id="tx-count" style="padding:0.75rem 0"></p>
+    </div>
+
+    <!-- TAB 4 — PURCHASE ORDERS -->
+<div id="tab-orders" class="inv-tab-content top-tab" style="display:none">
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.25rem">
+        <div class="stat-card"><div class="stat-num" id="po-total">—</div><div class="stat-label">Total Orders</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="po-pending">—</div><div class="stat-label">Pending</div><div class="stat-sub">Awaiting delivery</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="po-received">—</div><div class="stat-label">Received</div><div class="stat-sub">Fully delivered</div></div>
+        <div class="stat-card" style="background:#f0f4ff;border-color:#c7d6fb"><div class="stat-num" id="po-value" style="color:#1a56db">—</div><div class="stat-label">Total PO Value</div><div class="stat-sub">All orders</div></div>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>PO Number</th><th>Date Raised</th><th>Item</th><th>Qty Ordered</th><th>Unit Price</th><th>Total Value</th><th>Supplier</th><th>Expected Date</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="po-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 5 — REPORTS -->
+<div id="tab-reports" class="inv-tab-content top-tab" style="display:none">
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem">
+        <div class="stat-card highlight"><div class="stat-num" id="rpt-total-value">—</div><div class="stat-label">Total Inventory Value</div><div class="stat-sub">At current prices</div></div>
+        <div class="stat-card"><div class="stat-num" id="rpt-farm-value">—</div><div class="stat-label">Farm Products Value</div><div class="stat-sub">Subtotal</div></div>
+        <div class="stat-card"><div class="stat-num" id="rpt-kit-value">—</div><div class="stat-label">Training Kits Value</div><div class="stat-sub">Subtotal</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="rpt-at-risk">—</div><div class="stat-label">At-Risk Value</div><div class="stat-sub">Low + out of stock</div></div>
+      </div>
+      <div class="rpt-grid">
+        <div class="inv-card">
+          <div class="inv-card-header"><h3>Stock Value by Item</h3><div style="display:flex;gap:0.5rem"><button class="btn-outline-sm" onclick="exportReport('value')">🖨 PDF</button><button class="btn-outline-sm" onclick="window.open('export_inventory.php?type=value&format=csv','_blank')">📊 CSV</button></div></div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none"><table class="data-table"><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit Price</th><th>Stock Value</th><th>% of Total</th></tr></thead><tbody id="rpt-value-tbody"></tbody></table></div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-card-header"><h3>Reorder Summary</h3><div style="display:flex;gap:0.5rem"><button class="btn-outline-sm" onclick="exportReport('reorder')">🖨 PDF</button><button class="btn-outline-sm" onclick="window.open('export_inventory.php?type=reorder&format=csv','_blank')">📊 CSV</button></div></div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none"><table class="data-table"><thead><tr><th>Item</th><th>Current Stock</th><th>Reorder Pt.</th><th>Suggested Qty</th><th>Est. Cost</th><th>Priority</th></tr></thead><tbody id="rpt-reorder-tbody"></tbody></table></div>
+        </div>
+      </div>
+      <div class="inv-card" style="margin-top:1.25rem">
+        <div class="inv-card-header"><h3>Stock Movement Summary</h3><div style="display:flex;gap:0.5rem"><button class="btn-outline-sm" onclick="exportReport('movements')">🖨 PDF</button><button class="btn-outline-sm" onclick="window.open('export_inventory.php?type=movements&format=csv','_blank')">📊 CSV</button></div></div>
+        <div class="data-table-wrap" style="box-shadow:none;border:none"><table class="data-table"><thead><tr><th>Item</th><th>Total In</th><th>Total Out</th><th>Net Movement</th><th>Turnover Rate</th></tr></thead><tbody id="rpt-movement-tbody"></tbody></table></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ADD ITEM MODAL
+════════════════════════════════════════════════════ -->
+<div id="add-item-modal" class="modal-overlay" onclick="closeModalOutside(event,'add-item-modal')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><h3>Add New Item</h3><p class="modal-sub">Register a new product or kit in inventory</p></div>
+      <button class="modal-close" onclick="closeModal('add-item-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ai-name">Item Name *</label>
+          <input type="text" id="ai-name" class="form-input" placeholder="e.g. Organic fertilizer (500g)">
+        </div>
+        <div class="form-group">
+          <label>SKU / Item Code</label>
+          <div class="form-input" style="background:#f5f5f5;color:#888;cursor:default;display:flex;align-items:center;gap:0.5rem">
+            <span style="font-size:0.75rem">⚙</span>
+            <span id="ai-sku-preview">Auto-generated on save</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ai-desc">Description</label>
+        <input type="text" id="ai-desc" class="form-input" placeholder="Brief description">
+      </div>
+
+      <div class="form-group">
+        <label>Item Image</label>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div id="ai-img-preview" style="width:80px;height:80px;border:2px dashed #ccc;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;flex-shrink:0">
+            <span style="font-size:1.5rem;color:#ccc">📷</span>
+          </div>
+          <div>
+            <input type="file" id="ai-img-input" accept="image/*" style="display:none" onchange="previewItemImage('ai')">
+            <button type="button" class="btn-outline" onclick="document.getElementById('ai-img-input').click()">Upload Image</button>
+            <p style="font-size:var(--text-tiny);color:#aaa;margin-top:0.25rem">JPG, PNG, WebP · Max 2MB</p>
+          </div>
+        </div>
+        <input type="hidden" id="ai-img-path">
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="ai-cat">Category *</label>
+          <select id="ai-cat" class="form-input" onchange="previewSKU()">
+            <option value="farm">Farm Product</option>
+            <option value="kit">Training Kit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ai-unit">Unit *</label>
+          <select id="ai-unit" class="form-input">
+            <option>pcs</option><option>kits</option><option>bags</option>
+            <option>kg</option><option>bottles</option><option>packs</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ai-price">Unit Price (₱) *</label>
+          <input type="number" id="ai-price" class="form-input" min="0" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+
+      <!-- ── SHIPPING WEIGHT (ADD ITEM) ── -->
+      <div class="form-group" style="margin-top:0.25rem">
+        <label>Shipping Weight
+          <span style="font-weight:400;color:#888;font-size:11px">per unit — used for shipping fee calculation</span>
+        </label>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap">
+          <input type="number" id="ai-weight-qty"
+                 style="width:100px;padding:0.5rem;border:1.5px solid #ddd;border-radius:6px;font-size:0.9rem;font-family:inherit"
+                 min="0" step="any" placeholder="e.g. 500"
+                 oninput="convertWeight('ai')">
+          <select id="ai-weight-unit"
+                  style="width:120px;padding:0.5rem;border:1.5px solid #ddd;border-radius:6px;font-size:0.9rem;background:#fff;font-family:inherit"
+                  onchange="convertWeight('ai')">
+            <option value="g">g (grams)</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="L">L (liters)</option>
+            <option value="lb">lb</option>
+            <option value="oz">oz</option>
+          </select>
+          <div style="background:#f0f7ec;border:1px solid #c3e0b0;border-radius:6px;padding:8px 12px;color:#4B8423;font-size:13px;white-space:nowrap">
+            = <strong id="ai-weight-result">0.000</strong> kg
+          </div>
+        </div>
+        <div id="ai-weight-hint" style="font-size:11px;color:#888;margin-top:4px">
+          e.g. 1 pack = 200g → enter 200, select g &nbsp;·&nbsp;
+          1 bag = 1kg → enter 1, select kg &nbsp;·&nbsp;
+          1 kit = 2.5kg → enter 2.5, select kg
+        </div>
+        <input type="hidden" id="ai-weight" value="0">
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="ai-stock">Opening Stock *</label>
+          <input type="number" id="ai-stock" class="form-input" min="0" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label for="ai-maxstock">Max Stock</label>
+          <input type="number" id="ai-maxstock" class="form-input" min="1" placeholder="50">
+        </div>
+        <div class="form-group">
+          <label for="ai-reorder">Reorder Point</label>
+          <input type="number" id="ai-reorder" class="form-input" min="0" placeholder="10">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ai-supplier">Default Supplier</label>
+        <input type="text" id="ai-supplier" class="form-input" placeholder="e.g. AgriSupplies Inc.">
+      </div>
+
+      <div id="ai-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('add-item-modal')">Cancel</button>
+        <button class="btn-primary" onclick="submitNewItem()">Add Item</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     EDIT ITEM MODAL
+════════════════════════════════════════════════════ -->
+<div id="edit-item-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-item-modal')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><h3>Edit Item</h3><p class="modal-sub">Update item details</p></div>
+      <button class="modal-close" onclick="closeModal('edit-item-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+
+      <div class="form-row-2">
+        <div class="form-group"><label for="ei-name">Item Name *</label><input type="text" id="ei-name" class="form-input"></div>
+        <div class="form-group"><label for="ei-sku">SKU *</label><input type="text" id="ei-sku" class="form-input"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="ei-desc">Description</label>
+        <input type="text" id="ei-desc" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label>Item Image</label>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div id="ei-img-preview" style="width:80px;height:80px;border:2px dashed #ccc;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;flex-shrink:0">
+            <span id="ei-img-placeholder" style="font-size:1.5rem;color:#ccc">📷</span>
+            <img id="ei-img-thumb" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+          </div>
+          <div>
+            <input type="file" id="ei-img-input" accept="image/*" style="display:none" onchange="previewItemImage('ei')">
+            <button type="button" class="btn-outline" onclick="document.getElementById('ei-img-input').click()">Change Image</button>
+            <p style="font-size:var(--text-tiny);color:#aaa;margin-top:0.25rem">JPG, PNG, WebP · Max 2MB</p>
+          </div>
+        </div>
+        <input type="hidden" id="ei-img-path">
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="ei-cat">Category *</label>
+          <select id="ei-cat" class="form-input"><option value="farm">Farm Product</option><option value="kit">Training Kit</option></select>
+        </div>
+        <div class="form-group">
+          <label for="ei-unit">Unit *</label>
+          <select id="ei-unit" class="form-input"><option>pcs</option><option>kits</option><option>bags</option><option>kg</option><option>bottles</option><option>packs</option></select>
+        </div>
+        <div class="form-group">
+          <label for="ei-price">Unit Price (₱) *</label>
+          <input type="number" id="ei-price" class="form-input" min="0" step="0.01">
+        </div>
+      </div>
+
+      <!-- ── SHIPPING WEIGHT (EDIT ITEM) ── -->
+      <div class="form-group" style="margin-top:0.25rem">
+        <label>Shipping Weight
+          <span style="font-weight:400;color:#888;font-size:11px">per unit — used for shipping fee calculation</span>
+        </label>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap">
+          <input type="number" id="ei-weight-qty"
+                 style="width:100px;padding:0.5rem;border:1.5px solid #ddd;border-radius:6px;font-size:0.9rem;font-family:inherit"
+                 min="0" step="any" placeholder="e.g. 500"
+                 oninput="convertWeight('ei')">
+          <select id="ei-weight-unit"
+                  style="width:120px;padding:0.5rem;border:1.5px solid #ddd;border-radius:6px;font-size:0.9rem;background:#fff;font-family:inherit"
+                  onchange="convertWeight('ei')">
+            <option value="g">g (grams)</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="L">L (liters)</option>
+            <option value="lb">lb</option>
+            <option value="oz">oz</option>
+          </select>
+          <div style="background:#f0f7ec;border:1px solid #c3e0b0;border-radius:6px;padding:8px 12px;color:#4B8423;font-size:13px;white-space:nowrap">
+            = <strong id="ei-weight-result">0.000</strong> kg
+          </div>
+        </div>
+        <div id="ei-weight-hint" style="font-size:11px;color:#888;margin-top:4px">
+          e.g. 1 pack = 200g → enter 200, select g &nbsp;·&nbsp;
+          1 bag = 1kg → enter 1, select kg &nbsp;·&nbsp;
+          1 kit = 2.5kg → enter 2.5, select kg
+        </div>
+        <input type="hidden" id="ei-weight" value="0">
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group"><label for="ei-maxstock">Max Stock</label><input type="number" id="ei-maxstock" class="form-input" min="1"></div>
+        <div class="form-group"><label for="ei-reorder">Reorder Point</label><input type="number" id="ei-reorder" class="form-input" min="0"></div>
+        <div class="form-group"><label for="ei-supplier">Supplier</label><input type="text" id="ei-supplier" class="form-input"></div>
+      </div>
+
+      <input type="hidden" id="ei-id">
+      <div id="ei-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-item-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEditItem()">Save Changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- STOCK IN -->
+<div id="stockin-modal" class="modal-overlay" onclick="closeModalOutside(event,'stockin-modal')">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-header">
+      <div><h3>↑ Stock In</h3><p class="modal-sub" id="si-sub">Record incoming stock</p></div>
+      <button class="modal-close" onclick="closeModal('stockin-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="stock-action-summary" id="si-summary"></div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="si-qty">Quantity *</label><input type="number" id="si-qty" class="form-input" min="1" placeholder="e.g. 20"></div>
+        <div class="form-group"><label for="si-unit-price">Unit Price (₱)</label><input type="number" id="si-unit-price" class="form-input" min="0" step="0.01" placeholder="Auto-filled"></div>
+      </div>
+      <div class="form-group"><label for="si-supplier">Supplier</label><input type="text" id="si-supplier" class="form-input" placeholder="e.g. AgriSupplies Inc."></div>
+      <div class="form-group"><label for="si-po-ref">PO Reference</label><input type="text" id="si-po-ref" class="form-input" placeholder="e.g. PO-2026-001 (optional)"></div>
+      <div class="form-group"><label for="si-note">Note</label><input type="text" id="si-note" class="form-input" placeholder="Optional note…"></div>
+      <div class="stock-new-level" id="si-preview"></div>
+      <input type="hidden" id="si-item-id">
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('stockin-modal')">Cancel</button>
+        <button class="btn-primary" onclick="confirmStockIn()">✓ Record Stock In</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STOCK OUT -->
+<div id="stockout-modal" class="modal-overlay" onclick="closeModalOutside(event,'stockout-modal')">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-header">
+      <div><h3>↓ Stock Out</h3><p class="modal-sub" id="so-sub">Record stock used or sold</p></div>
+      <button class="modal-close" onclick="closeModal('stockout-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="stock-action-summary" id="so-summary"></div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="so-qty">Quantity *</label><input type="number" id="so-qty" class="form-input" min="1" placeholder="e.g. 5" oninput="previewStockOut()"></div>
+        <div class="form-group"><label for="so-reason">Reason *</label>
+          <select id="so-reason" class="form-input">
+            <option value="workshop">Used in workshop</option>
+            <option value="sold">Sold — Farm Shop</option>
+            <option value="damaged">Damaged / expired</option>
+            <option value="adjustment">Inventory adjustment</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label for="so-ref">Reference (Workshop / Order #)</label><input type="text" id="so-ref" class="form-input" placeholder="e.g. Seed Saving · Session 2"></div>
+      <div class="form-group"><label for="so-note">Note</label><input type="text" id="so-note" class="form-input" placeholder="Optional note…"></div>
+      <div class="stock-new-level" id="so-preview"></div>
+      <div id="so-error" class="error-msg" style="display:none"></div>
+      <input type="hidden" id="so-item-id">
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('stockout-modal')">Cancel</button>
+        <button class="btn-primary" onclick="confirmStockOut()">✓ Record Stock Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RAISE PURCHASE ORDER -->
+<div id="po-modal" class="modal-overlay" onclick="closeModalOutside(event,'po-modal')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><h3>🛒 Raise Purchase Order</h3><p class="modal-sub">Order stock from a supplier</p></div>
+      <button class="modal-close" onclick="closeModal('po-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="po-item">Item *</label>
+          <select id="po-item" class="form-input" onchange="fillPOPrice()"><option value="">Select item</option></select>
+        </div>
+        <div class="form-group">
+          <label for="po-supplier">Supplier <span style="font-weight:400;color:#aaa">(optional)</span></label>
+          <input type="text" id="po-supplier" class="form-input" placeholder="e.g. AgriSupplies Inc. (optional)">
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label for="po-qty">Qty to Order *</label><input type="number" id="po-qty" class="form-input" min="1" oninput="calcPOTotal()"></div>
+        <div class="form-group"><label for="po-unit-price">Unit Price (₱) *</label><input type="number" id="po-unit-price" class="form-input" min="0" step="0.01" oninput="calcPOTotal()"></div>
+        <div class="form-group"><label>Total Value</label><div class="form-input" id="po-total-display" style="background:#f9fbf9;cursor:default;font-weight:700;color:#4B8423">₱0.00</div></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="po-date">Expected Delivery *</label><input type="date" id="po-date" class="form-input"></div>
+        <div class="form-group"><label for="po-priority">Priority</label>
+          <select id="po-priority" class="form-input"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="low">Low</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label for="po-note">Note</label><input type="text" id="po-note" class="form-input" placeholder="Additional instructions…"></div>
+      <div id="po-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('po-modal')">Cancel</button>
+        <button class="btn-primary" onclick="submitPO()">Submit Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIVE PO -->
+<div id="receive-po-modal" class="modal-overlay" onclick="closeModalOutside(event,'receive-po-modal')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <div><h3>Receive Delivery</h3><p class="modal-sub" id="recv-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('receive-po-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="stock-action-summary" id="recv-summary"></div>
+      <div class="form-group"><label for="recv-qty">Qty Received *</label><input type="number" id="recv-qty" class="form-input" min="1"></div>
+      <div class="form-group"><label for="recv-note">Delivery Note</label><input type="text" id="recv-note" class="form-input" placeholder="e.g. Partial delivery"></div>
+      <input type="hidden" id="recv-po-id">
+      <div id="recv-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('receive-po-modal')">Cancel</button>
+        <button class="btn-primary" onclick="confirmReceivePO()">✓ Mark as Received</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div id="delete-item-modal" class="modal-overlay" onclick="closeModalOutside(event,'delete-item-modal')">
+  <div class="modal-box" style="max-width:400px;text-align:center;padding:2rem">
+    <div style="font-size:2.5rem;margin-bottom:0.75rem">🗑️</div>
+    <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:0.5rem">Delete Item?</h3>
+    <p id="delete-item-msg" style="font-size:var(--text-body-sm);color:#666;margin-bottom:1.5rem"></p>
+    <input type="hidden" id="delete-item-id">
+    <div style="display:flex;justify-content:center;gap:0.75rem">
+      <button class="btn-outline" onclick="closeModal('delete-item-modal')">Cancel</button>
+      <button class="btn-primary" style="background:var(--color-danger)" onclick="confirmDeleteItem()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="AdminInventory.js"></script>
+<script src="admin_nav_session.js"></script>
+<!-- SHOP ORDER STATUS MODAL -->
+<div id="so-status-modal" class="modal-overlay" onclick="closeModalOutside(event,'so-status-modal')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <div><h3>Advance Order Status</h3><p class="modal-sub" id="so-sm-code"></p></div>
+      <button class="modal-close" onclick="closeModal('so-status-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div style="background:#f9fbf9;border:1.5px solid #c3e0b0;border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem">
+        <div style="text-align:center;flex:1">
+          <div style="font-size:var(--text-tiny);color:#888;margin-bottom:0.2rem">Current</div>
+          <div style="font-weight:700;color:#555" id="so-sm-current-label">—</div>
+        </div>
+        <div style="font-size:1.2rem;color:#4B8423">→</div>
+        <div style="text-align:center;flex:1">
+          <div style="font-size:var(--text-tiny);color:#888;margin-bottom:0.2rem">Next</div>
+          <div style="font-weight:800;color:#4B8423" id="so-sm-next-label">—</div>
+        </div>
+      </div>
+      <p style="font-size:var(--text-caption);color:#888;margin-bottom:1rem">Orders move forward one step at a time. Use the Cancel button on the order card to cancel.</p>
+      <div class="form-group">
+        <label>Note (optional)</label>
+        <input type="text" id="so-sm-note" class="form-input" placeholder="e.g. Handed to rider…">
+      </div>
+      <input type="hidden" id="so-sm-id">
+      <input type="hidden" id="so-sm-status">
+      <div id="so-sm-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('so-status-modal')">Close</button>
+        <button class="btn-primary" onclick="soConfirmStatus()">✓ Advance Status</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP ORDER DETAIL MODAL -->
+<div id="so-detail-modal" class="modal-overlay" onclick="closeModalOutside(event,'so-detail-modal')">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-header">
+      <div><h3 id="so-od-title">Order Details</h3><p class="modal-sub" id="so-od-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('so-detail-modal')">✕</button>
+    </div>
+    <div id="so-od-body" style="padding:1.5rem;max-height:70vh;overflow-y:auto"></div>
+  </div>
+</div>
+</body>
+</html>

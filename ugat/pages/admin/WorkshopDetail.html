@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!--
+  WorkshopDetail.html — UGAT TrainTrack
+  Detailed view of a single workshop.
+  Reads ?id= from the URL and renders the matching workshop data.
+
+  Linked files:
+    Styles  : ../css/styles.css        (shared design system)
+    Styles  : WorkshopDetail.css       (detail page layout)
+    Scripts : WorkshopDetail.js        (reads URL param, renders all sections,
+                                        handles attendance modal + edit toast)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop Detail — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="WorkshopDetail.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+<!-- ===== ADMIN NAVIGATION ===== -->
+  <nav class="app-nav admin-nav" id="main-nav"></nav>
+
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="app-content">
+
+    <!-- Back breadcrumb -->
+    <div class="detail-breadcrumb">
+      <a href="AdminWorkshops.html" class="breadcrumb-link">← Back to Workshops</a>
+    </div>
+
+    <!-- Page header (injected by JS) -->
+    <div class="detail-header" id="detail-header">
+      <!-- skeleton while loading -->
+      <div class="detail-header-text">
+        <div id="detail-badge"></div>
+        <h2 class="page-title" id="detail-title">Loading…</h2>
+        <p class="page-sub"  id="detail-category"></p>
+      </div>
+      <div class="detail-header-actions" id="detail-actions"></div>
+    </div>
+
+
+    <!-- ── OVERVIEW STATS ROW ── -->
+    <div class="stat-cards" id="detail-stats">
+      <!-- injected by JS -->
+    </div>
+
+
+    <!-- ── TWO-COLUMN LAYOUT: info + sidebar ── -->
+    <div class="detail-body">
+
+      <!-- LEFT COLUMN -->
+      <div class="detail-main">
+
+        <!-- About / Description -->
+        <section class="detail-section">
+          <h3 class="detail-section-title">About this Workshop</h3>
+          <p id="detail-description" class="detail-description"></p>
+
+          <!-- Learning outcomes -->
+          <div class="detail-outcomes" id="detail-outcomes-wrap">
+            <h4 class="detail-subsection-title">Learning Outcomes</h4>
+            <ul id="detail-outcomes" class="detail-outcomes-list"></ul>
+          </div>
+
+          <!-- Required materials / kit -->
+          <div class="detail-materials" id="detail-materials-wrap" style="margin-top:1.25rem">
+            <h4 class="detail-subsection-title">Required Materials</h4>
+            <ul id="detail-materials" class="detail-materials-list"></ul>
+          </div>
+        </section>
+
+        <!-- Session Timeline -->
+        <section class="detail-section">
+          <h3 class="detail-section-title">Session Timeline</h3>
+          <div id="detail-sessions" class="detail-sessions"></div>
+        </section>
+
+        <!-- Enrolled Trainees Table -->
+        <section class="detail-section">
+          <div class="detail-section-header">
+            <h3 class="detail-section-title" style="margin:0">Enrolled Trainees</h3>
+            <span id="detail-trainee-count" class="detail-count-badge"></span>
+          </div>
+          <div class="data-table-wrap" style="margin-top:0.75rem">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Trainee</th>
+                  <th>Contact</th>
+                  <th>Attendance</th>
+                  <th>Sessions</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="detail-trainees-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div><!-- /detail-main -->
+
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="detail-sidebar">
+
+        <!-- Workshop Info card -->
+        <div class="sidebar-card">
+          <h4 class="sidebar-card-title">Workshop Info</h4>
+          <ul class="sidebar-info-list" id="detail-info-list"></ul>
+        </div>
+
+        <!-- Slot availability -->
+        <div class="sidebar-card">
+          <h4 class="sidebar-card-title">Slot Availability</h4>
+          <div id="detail-slots-wrap"></div>
+        </div>
+
+        <!-- Certification requirement -->
+        <div class="sidebar-card">
+          <h4 class="sidebar-card-title">Certification</h4>
+          <p id="detail-cert-req" class="sidebar-info-txt"></p>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="sidebar-card">
+          <h4 class="sidebar-card-title">Quick Actions</h4>
+          <div class="sidebar-actions" id="detail-quick-actions"></div>
+        </div>
+
+      </aside>
+
+    </div><!-- /detail-body -->
+
+  </main>
+</div><!-- /app-layout -->
+
+
+<!-- ===== ATTENDANCE MODAL (same as workshops page) ===== -->
+<div id="attendance-modal" class="modal-overlay" onclick="closeModalOutside(event,'attendance-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div>
+        <h3 id="att-modal-title">Attendance Sheet</h3>
+        <p class="modal-sub" id="att-modal-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal('attendance-modal')">✕</button>
+    </div>
+    <div class="attendance-summary">
+      <span class="att-stat present-stat">Present: <span id="att-present">0</span></span>
+      <span class="att-stat late-stat">Late: <span id="att-late">0</span></span>
+      <span class="att-stat absent-stat">Absent: <span id="att-absent">0</span></span>
+      <button class="btn-primary" style="margin-left:auto" onclick="saveAttendance()">Save Attendance</button>
+    </div>
+    <div class="att-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Trainee</th><th>Contact Number</th>
+            <th>Previous Session</th><th>Mark Attendance</th>
+          </tr>
+        </thead>
+        <tbody id="att-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================================================
+     MODAL: EDIT THIS WORKSHOP
+     Pre-filled with the current workshop's data
+     =================================================== -->
+<div id="edit-workshop-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-workshop-modal')">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <div>
+        <h3 id="ew-modal-title">Edit Workshop</h3>
+        <p class="modal-sub">Update the details for this workshop</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('edit-workshop-modal')">✕</button>
+    </div>
+
+    <div style="padding:1.5rem">
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ew-title">Workshop Title *</label>
+          <input type="text" id="ew-title" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="ew-category">Category *</label>
+          <select id="ew-category" class="form-input">
+            <option>Urban Farming</option>
+            <option>Specialty Farming</option>
+            <option>Tech Farming</option>
+            <option>Crop Growing</option>
+            <option>Sustainable</option>
+            <option>Livestock</option>
+            <option>Aquaculture</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ew-facilitator">Facilitator *</label>
+          <input type="text" id="ew-facilitator" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="ew-location">Location *</label>
+          <input type="text" id="ew-location" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ew-max-slots">Max Slots *</label>
+          <input type="number" id="ew-max-slots" class="form-input" min="1">
+        </div>
+        <div class="form-group">
+          <label for="ew-status">Status *</label>
+          <select id="ew-status" class="form-input">
+            <option value="upcoming">Upcoming</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+ <div class="form-group">
+        <label for="ew-description">Description</label>
+        <textarea id="ew-description" class="form-input" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ew-outcomes">Learning Outcomes</label>
+        <textarea id="ew-outcomes" class="form-input" rows="3"
+                  placeholder="One outcome per line…"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ew-materials">Required Materials</label>
+        <textarea id="ew-materials" class="form-input" rows="3"
+                  placeholder="One item per line…"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ew-cert-req">Certification Requirement</label>
+        <input type="text" id="ew-cert-req" class="form-input">
+      </div>
+
+      <!-- Sessions editor -->
+      <div class="form-group">
+        <label style="margin-bottom:0.6rem;display:block">Sessions</label>
+        <div id="ew-sessions-list" style="display:flex;flex-direction:column;gap:0.6rem"></div>
+      </div>
+
+      <div id="ew-error" class="error-msg" style="display:none"></div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-workshop-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveWorkshopEdits()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="toast" class="toast"></div>
+<script src="WorkshopDetail.js"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

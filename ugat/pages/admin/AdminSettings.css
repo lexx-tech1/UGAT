@@ -1,0 +1,167 @@
+/* AdminSettings.css */
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* ── Sidebar nav ── */
+.settings-sidenav {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  position: sticky;
+  top: 80px;
+}
+
+.settings-nav-item {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-body);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-nav-item:hover   { background: var(--color-primary-pale); color: #4B8423; }
+.settings-nav-item.active  { background: var(--color-primary-pale); color: #4B8423; font-weight: var(--weight-bold); }
+
+/* ── Panel ── */
+.settings-panel {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+}
+
+.settings-panel-title {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  margin-bottom: 0.3rem;
+}
+
+.settings-panel-sub {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settings-subsection {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  margin: 1.25rem 0 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.settings-info-box {
+  background: #e8f4ff;
+  border: 1.5px solid #c7d6fb;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: var(--text-body-sm);
+  color: #1a56db;
+  margin-bottom: 1.25rem;
+}
+
+/* Toggle rows */
+.settings-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+.settings-toggle-row:last-of-type { border-bottom: none; }
+
+.toggle-label { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--color-text); }
+.toggle-sub   { font-size: var(--text-caption); color: var(--color-text-mid); margin-top: 0.1rem; }
+
+/* Toggle switch */
+.toggle-switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: var(--color-border);
+  border-radius: 24px;
+  transition: background 0.25s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.25s;
+}
+.toggle-switch input:checked + .toggle-slider { background: #4B8423; }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+/* Action rows */
+.settings-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+/* About section */
+.settings-about {
+  background: #f9f9f9;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.settings-about-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: var(--text-body-sm);
+  border-bottom: 1px solid #efefef;
+  color: var(--color-text-mid);
+}
+.settings-about-row:last-child { border-bottom: none; }
+.settings-about-row strong { color: var(--color-text); font-weight: var(--weight-semibold); }
+
+/* Save row */
+.settings-save-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Password input with toggle */
+.pw-input-wrap { position: relative; }
+.pw-input-wrap .form-input { padding-right: 2.5rem; }
+.pw-toggle { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.9rem; color: var(--color-text-mid); padding: 0; }
+
+@media (max-width: 860px) { .settings-layout { grid-template-columns: 1fr; } .settings-sidenav { position: static; flex-direction: row; flex-wrap: wrap; } }

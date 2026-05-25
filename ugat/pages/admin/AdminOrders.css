@@ -1,0 +1,230 @@
+/* AdminOrders.css — UGAT TrainTrack */
+
+/* ── Tab badge ─────────────────────────────────────────────── */
+.tab-badge {
+  background: #e53935;
+  color: #fff;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ── Revenue grid ──────────────────────────────────────────── */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+.revenue-item {
+  background: #f9fbf9;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+}
+.revenue-item.highlight { background: #f0f7ec; border-color: #c3e0b0; }
+.revenue-val { font-size: 1.1rem; font-weight: 800; color: #4B8423; }
+.revenue-lbl { font-size: var(--text-tiny); color: var(--color-text-mid); margin-top: 0.2rem; }
+
+/* ── Payment badges ────────────────────────────────────────── */
+.pay-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pay-badge.gcash { background: #e8f4ff; color: #1a73e8; border: 1px solid #c5def8; }
+.pay-badge.cod   { background: #f0f7ec; color: #4B8423; border: 1px solid #c3e0b0; }
+
+/* ── Status badges ─────────────────────────────────────────── */
+.status-otd { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; border-radius: 20px; padding: 0.2rem 0.75rem; font-size: var(--text-tiny); font-weight: 700; }
+.badge-cancelled { background: #fde8e8; color: #c62828; border: 1px solid #f5c6c6; border-radius: 20px; padding: 0.2rem 0.75rem; font-size: var(--text-tiny); font-weight: 700; }
+
+/* ── Admin order card ──────────────────────────────────────── */
+.order-card-admin {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+.order-card-admin:hover { box-shadow: 0 4px 16px rgba(75,132,35,0.1); }
+
+.oca-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+.oca-code {
+  font-size: var(--text-body-sm);
+  font-weight: 800;
+  font-family: monospace;
+  color: var(--color-text);
+}
+.oca-meta {
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+  margin-top: 0.2rem;
+}
+.oca-addr {
+  font-size: var(--text-caption);
+  color: #555;
+  margin-top: 0.2rem;
+}
+
+/* ── Order tracker (admin card version) ────────────────────── */
+.order-tracker-admin {
+  display: flex;
+  align-items: center;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.tracker-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.tracker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #fff;
+  transition: all 0.2s;
+}
+.tracker-step.done .tracker-dot    { border-color: #4B8423; background: #4B8423; }
+.tracker-step.current .tracker-dot { border-color: #4B8423; background: #fff; box-shadow: 0 0 0 3px rgba(75,132,35,0.2); }
+.tracker-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: #aaa;
+  white-space: nowrap;
+  text-align: center;
+}
+.tracker-step.done .tracker-label,
+.tracker-step.current .tracker-label { color: #4B8423; }
+.tracker-line { flex: 1; height: 2px; background: #e0e0e0; margin-bottom: 1.2rem; min-width: 16px; }
+.tracker-line.done { background: #4B8423; }
+
+/* ── Items inside card ─────────────────────────────────────── */
+.oca-items {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem 0;
+  margin: 0.5rem 0;
+}
+.oca-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  font-size: var(--text-body-sm);
+}
+.oca-item-name { flex: 1; }
+.oca-item-qty  { color: var(--color-text-mid); }
+.oca-item-price { font-weight: 700; }
+
+/* ── Card footer ───────────────────────────────────────────── */
+.oca-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.oca-totals {
+  display: flex;
+  gap: 1rem;
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+  flex-wrap: wrap;
+}
+
+/* ── Order detail modal ────────────────────────────────────── */
+.od-section { margin-bottom: 1.25rem; }
+.od-section-title {
+  font-size: var(--text-caption);
+  font-weight: 700;
+  color: #4B8423;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1.5px solid var(--color-border);
+}
+.od-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-body-sm);
+  padding: 0.3rem 0;
+  gap: 1rem;
+}
+.od-row span { color: var(--color-text-mid); flex-shrink: 0; }
+.od-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: var(--text-body-sm);
+}
+.od-log-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  font-size: var(--text-caption);
+  flex-wrap: wrap;
+}
+
+/* ── Status modal flow ─────────────────────────────────────── */
+.sm-step {
+  font-size: 9px;
+  font-weight: 600;
+  color: #aaa;
+  white-space: nowrap;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+.sm-step.done    { color: #4B8423; background: #f0f7ec; }
+.sm-step.current { color: #fff; background: #4B8423; }
+.sm-arrow { font-size: 10px; color: #ccc; padding: 0 2px; }
+.sm-arrow.done { color: #4B8423; }
+
+/* ── Reuse from AdminInventory ─────────────────────────────── */
+.ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.ov-alert-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); flex-wrap: wrap; }
+.ov-alert-info { flex: 1; min-width: 0; }
+.ov-alert-name { font-size: var(--text-body-sm); font-weight: 700; }
+.ov-alert-meta { font-size: var(--text-caption); color: var(--color-text-mid); margin-top: 0.15rem; }
+.ov-tx-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #f5f5f5; }
+.ov-tx-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ov-tx-info { flex: 1; min-width: 0; }
+.ov-tx-name { font-size: var(--text-body-sm); font-weight: 600; }
+.ov-tx-meta { font-size: var(--text-tiny); color: var(--color-text-mid); }
+
+.btn-xs.green { background: #f0f7ec; color: #4B8423; border-color: #c3e0b0; }
+.btn-xs.green:hover { background: #4B8423; color: #fff; }
+.btn-sm.green { background: #4B8423; color: #fff; border: none; }
+.btn-sm.green:hover { background: #3a6619; }
+
+@media (max-width: 768px) {
+  .revenue-grid { grid-template-columns: repeat(2, 1fr); }
+  .ov-grid { grid-template-columns: 1fr; }
+  .oca-footer { flex-direction: column; align-items: flex-start; }
+}

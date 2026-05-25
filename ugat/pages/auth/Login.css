@@ -1,0 +1,375 @@
+/* =============================================================================
+   UGAT TrainTrack — Login Page Styles
+   Login.css
+
+   Two-column split layout:
+   Left  : Rounded image card with location label overlay
+   Right : Logo, pill tab toggle, login / register forms
+   ============================================================================= */
+
+
+/* ── Auth Layout ─────────────────────────────────────────────────────────────── */
+
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 3rem;
+  gap: 4rem;
+  overflow: auto;
+}
+
+
+/* ── Left Column: Image Card ─────────────────────────────────────────────────── */
+
+.auth-img-side {
+  position: relative;
+  /* Fill most of the vertical space */
+  height: calc(100vh - 5rem);
+  width: 42%;
+  max-width: 580px;
+  min-width: 300px;
+  flex-shrink: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.105);
+}
+
+.auth-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dark gradient overlay at bottom for the text */
+.auth-img-side::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  border-radius: 28px;
+}
+
+.auth-logo-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Location label */
+.auth-location {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 2;
+  color: #fff;
+}
+
+.auth-location p {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-regular);
+  opacity: 0.85;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.02em;
+}
+
+.auth-location h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: var(--weight-regular);
+  line-height: 1.25;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+
+/* ── Right Column: Form Side ─────────────────────────────────────────────────── */
+
+.auth-form-side {
+  flex: 1;
+  max-width: 420px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+
+/* ── Logo ────────────────────────────────────────────────────────────────────── */
+
+.auth-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+}
+
+.auth-logo-text {
+  text-align: center;
+}
+
+.logo-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.logo-sub {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+  margin-top: 0.25rem;
+  font-weight: var(--weight-regular);
+}
+
+/* Logo icon: leaf emoji styled as badge */
+.auth-logo .logo-icon.lg {
+  font-size: 2.5rem;
+  background: var(--color-primary-pale);
+  border: 2px solid var(--color-primary-mid);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ── Tab Toggle ──────────────────────────────────────────────────────────────── */
+
+.auth-tabs {
+  display: flex;
+  background: rgb(156, 194, 130);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  margin-bottom: 2rem;
+  gap: 0;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-primary-dark);
+  transition: all var(--transition-base);
+}
+
+.auth-tab.active {
+  background: rgb(75, 132, 35);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(45, 106, 45, 0.25);
+}
+
+.auth-tab:not(.active):hover {
+  color: var(--color-primary-dark);
+  opacity: 0.8;
+}
+
+
+/* ── Form Controls ───────────────────────────────────────────────────────────── */
+
+/* Override form-input for auth: pill shape */
+#auth-login-form .form-input,
+#auth-register-form .form-input {
+  border-radius: var(--radius-pill);
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border: 1.5px solid #d8ead8;
+  font-size: var(--text-body-sm);
+  color: var(--color-text);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+#auth-login-form .form-input:focus,
+#auth-register-form .form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(45, 106, 45, 0.08);
+  outline: none;
+}
+
+/* Password toggle icon position fix for pill inputs */
+.input-with-icon .input-icon {
+  right: 1.1rem;
+  opacity: 0.4;
+  font-size: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Login button */
+#auth-login-form .btn-primary.full,
+#auth-register-form .btn-primary.full {
+  border-radius: var(--radius-pill);
+  padding: 0.8rem;
+  font-size: var(--text-body);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.02em;
+  margin-top: 0.25rem;
+  background: rgb(75, 132, 35);
+  transition: background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+#auth-login-form .btn-primary.full:hover,
+#auth-register-form .btn-primary.full:hover {
+  background: rgb(60, 110, 28);
+  box-shadow: 0 6px 20px rgba(45, 106, 45, 0.28);
+  transform: translateY(-1px);
+}
+
+/* Remember me / Forgot password row */
+.form-row-between {
+  margin-bottom: 1.25rem;
+}
+
+.form-row-between .checkbox-label {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+}
+
+/* Forgot Password link */
+.link-sm {
+  font-size: var(--text-body-sm);
+  color: var(--color-primary-dark);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transition: opacity var(--transition-base);
+}
+
+.link-sm:hover {
+  opacity: 0.7;
+}
+
+
+/* ── Error Message ───────────────────────────────────────────────────────────── */
+
+.error-msg {
+  margin-top: 0.75rem;
+  background: #fff0f0;
+  border: 1.5px solid #f5c6c6;
+  color: var(--color-danger);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-body-sm);
+  text-align: center;
+}
+
+
+/* ── Dev Hint ────────────────────────────────────────────────────────────────── */
+
+.auth-hint {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: var(--text-tiny);
+  color: var(--color-text-light);
+  background: var(--color-primary-pale);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+
+/* ── Register form extras ────────────────────────────────────────────────────── */
+
+.auth-center {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+}
+
+.auth-center a {
+  color: var(--color-primary-dark);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+.auth-center a:hover {
+  text-decoration: underline;
+}
+
+/* Register two-col form rows: pill inputs */
+#auth-register-form .form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .auth-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    gap: 2rem;
+    overflow: auto;
+  }
+
+  .auth-img-side {
+    width: 100%;
+    height: 260px;
+    max-width: 480px;
+  }
+
+  .auth-form-side {
+    max-width: 480px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  #auth-register-form .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-location h2 {
+    font-size: 1.4rem;
+  }
+}
+
+.address-suggestion-item {
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.4;
+}
+
+.address-suggestion-item:hover {
+  background: #f5fbf2;
+  color: #4B8423;
+}
+
+.address-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+#auth-register-form select.form-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234B8423' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}

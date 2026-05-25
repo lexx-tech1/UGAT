@@ -1,0 +1,339 @@
+/*
+  AdminDashboard.css — UGAT TrainTrack
+  Full admin dashboard layout and components.
+*/
+
+/* ── Page shell ── */
+.dash-content {
+  padding: 2rem;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Welcome header ── */
+.dash-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.dash-greeting {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+  margin-bottom: 0.2rem;
+}
+
+.dash-title {
+  font-size: 2rem;
+  font-weight: var(--weight-extrabold);
+  color: #4B8423;
+  margin-bottom: 0.25rem;
+}
+
+.dash-sub {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+}
+
+.dash-welcome-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ── Main grid: wide left + narrow right ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.dash-col-main { display: flex; flex-direction: column; }
+.dash-col-side { display: flex; flex-direction: column; gap: 0; }
+
+/* ── Card base ── */
+.dash-card {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.dash-card-title {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.dash-card-sub {
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+  margin-top: 0.1rem;
+}
+
+.dash-view-all {
+  font-size: var(--text-caption);
+  color: #4B8423;
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dash-view-all:hover { opacity: 0.75; }
+
+/* ── Chart ── */
+.chart-wrap { position: relative; width: 100%; }
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+  white-space: nowrap;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+}
+
+/* ── Attendance bars ── */
+.attendance-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.att-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.att-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-caption);
+}
+
+.att-bar-name {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.att-bar-rate {
+  font-weight: var(--weight-bold);
+  color: #4B8423;
+}
+
+.att-stacked-bar {
+  display: flex;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.att-seg-present { background: #4B8423; }
+.att-seg-late    { background: #f4a523; }
+.att-seg-absent  { background: #e74c3c; }
+
+.att-bar-pills {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.att-pill {
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.att-pill-p { background: #e8f5e9; color: #4B8423; }
+.att-pill-l { background: #fff3e0; color: #e65100; }
+.att-pill-a { background: #ffebee; color: #e74c3c; }
+
+/* ── Upcoming sessions list ── */
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.session-item:last-child { border-bottom: none; }
+
+.session-date-badge {
+  background: var(--color-primary-pale);
+  border: 1.5px solid var(--color-primary-mid);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+  min-width: 46px;
+  flex-shrink: 0;
+}
+
+.session-date-day  { font-size: 1.1rem; font-weight: var(--weight-extrabold); color: #4B8423; line-height: 1; }
+.session-date-mon  { font-size: 0.65rem; font-weight: var(--weight-semibold); color: var(--color-text-mid); text-transform: uppercase; }
+
+.session-info { flex: 1; min-width: 0; }
+.session-title { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.session-meta  { font-size: var(--text-caption); color: var(--color-text-mid); margin-top: 0.1rem; }
+
+/* ── Donut chart ── */
+.donut-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.donut-center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.donut-num { font-size: 1.6rem; font-weight: var(--weight-extrabold); color: var(--color-text); line-height: 1; }
+.donut-lbl { font-size: var(--text-tiny); color: var(--color-text-mid); font-weight: var(--weight-medium); margin-top: 0.15rem; }
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0 0.25rem;
+}
+
+.donut-leg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-caption);
+}
+
+.donut-leg-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-mid);
+}
+
+.donut-leg-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.donut-leg-val {
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+/* ── Stock alerts ── */
+.stock-alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 0.75rem;
+}
+
+.stock-alert-item:last-child { border-bottom: none; }
+
+.stock-alert-info { flex: 1; min-width: 0; }
+.stock-alert-name { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stock-alert-qty  { font-size: var(--text-caption); color: var(--color-text-mid); }
+
+/* ── Activity feed ── */
+.activity-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: flex-start;
+}
+
+.activity-item:last-child { border-bottom: none; }
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.activity-text { font-size: var(--text-caption); color: var(--color-text); line-height: var(--leading-snug); flex: 1; }
+.activity-time { font-size: var(--text-tiny); color: var(--color-text-light); white-space: nowrap; flex-shrink: 0; }
+
+/* ── Quick actions ── */
+.dash-quick-actions { padding: 1rem 1.1rem; }
+
+.qa-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-body);
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.qa-btn:last-child { margin-bottom: 0; }
+
+.qa-btn:hover {
+  border-color: #4B8423;
+  background: var(--color-primary-pale);
+  color: #4B8423;
+  transform: translateX(3px);
+}
+
+.qa-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .dash-kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-kpi-row { grid-template-columns: repeat(2, 1fr); }
+}

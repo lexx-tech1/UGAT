@@ -1,0 +1,171 @@
+/*
+  AdminCertifications.css — UGAT TrainTrack
+  Page-specific styles for AdminCertifications.html.
+*/
+
+/* ── Action needed label ── */
+.action-needed-txt {
+  color: var(--color-warning);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+}
+
+/* ── Issue Confirm Modal — trainee summary card ── */
+.cert-confirm-card {
+  background: var(--color-primary-pale);
+  border: 1.5px solid var(--color-primary-mid);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cert-confirm-card .confirm-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.cert-confirm-card .confirm-name {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  color: var(--color-text);
+}
+
+.cert-confirm-card .confirm-meta {
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+}
+
+.cert-confirm-card .confirm-rate {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-extrabold);
+  color: #4B8423;
+}
+
+/* ── Certificate Preview Card (in view modal) ── */
+.cert-preview-card {
+  border: 2px solid #4B8423;
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f9fff5 0%, #edf7e4 100%);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+/* Decorative corner accent */
+.cert-preview-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 6px;
+  background: linear-gradient(to right, #4B8423, #8dc63f, #4B8423);
+}
+
+.cert-preview-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 6px;
+  background: linear-gradient(to right, #4B8423, #8dc63f, #4B8423);
+}
+
+.cert-org-name {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  color: #4B8423;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.cert-title-label {
+  font-size: var(--text-caption);
+  color: var(--color-text-mid);
+  margin-bottom: 0.3rem;
+  font-style: italic;
+}
+
+.cert-trainee-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: #1e4d1e;
+  margin-bottom: 0.4rem;
+}
+
+.cert-award-text {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-mid);
+  margin-bottom: 0.5rem;
+}
+
+.cert-workshop-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: #4B8423;
+  margin-bottom: 1rem;
+}
+
+.cert-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #b5d9a0;
+}
+
+.cert-footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.cert-footer-line {
+  width: 140px;
+  height: 1px;
+  background: #4B8423;
+  margin-bottom: 0.25rem;
+}
+
+.cert-footer-label {
+  font-size: var(--text-tiny);
+  color: var(--color-text-mid);
+}
+
+.cert-footer-value {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+/* ── Certificate detail table ── */
+.cert-detail-table {
+  width: 100%;
+  font-size: var(--text-body-sm);
+  border-collapse: collapse;
+}
+
+.cert-detail-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cert-detail-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cert-detail-table td:first-child {
+  color: var(--color-text-mid);
+  width: 40%;
+}
+
+.cert-detail-table td:last-child {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}

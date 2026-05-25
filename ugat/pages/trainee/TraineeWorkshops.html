@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Workshops & Certifications — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="TraineeWorkshops.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav">
+    <div class="nav-logo">
+      <a href="TraineeDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="TraineeDashboard.html" class="nav-link">Dashboard</a>
+      <a href="TraineeWorkshops.html" class="nav-link active">My Workshops</a>
+      <a href="TraineeShop.html"      class="nav-link">Farm Shop</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="https://i.pravatar.cc/36?img=5" alt="Lina" class="user-avatar">
+        <span class="user-dropdown-name">Lina <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=5" alt="Lina" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Angelina Reyes</div>
+            <div class="user-dropdown-role">Trainee</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="profile.php" class="user-dropdown-item">My Profile</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">My Workshops</h2>
+        <p class="page-sub">Track your enrolled workshops, session progress, and attendance</p>
+      </div>
+      <button class="btn-primary" onclick="openEnrollModal()">+ Enroll in a Workshop</button>
+    </div>
+
+    <!-- Inner tabs: My Workshops | Certifications -->
+    <div class="pm-tab-bar">
+      <button class="pm-tab active" onclick="switchTab('workshops', this)">My Workshops</button>
+      <button class="pm-tab"        onclick="switchTab('certifications', this)">Certifications</button>
+    </div>
+
+    <!-- ══ WORKSHOPS TAB ══ -->
+    <div id="tab-workshops">
+
+      <!-- KPIs -->
+<div class="stat-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.25rem">
+  <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total enrolled</div><div class="stat-sub">Across all workshops</div></div>
+  <div class="stat-card"><div class="stat-num" id="stat-upcoming">—</div><div class="stat-label">Upcoming</div><div class="stat-sub">Sessions scheduled</div></div>
+  <div class="stat-card highlight"><div class="stat-num" id="stat-rate">—</div><div class="stat-label">Attendance rate</div><div class="stat-sub">Across all sessions</div></div>
+  <div class="stat-card"><div class="stat-num" id="stat-completed">—</div><div class="stat-label">Completed</div><div class="stat-sub">All sessions attended</div></div>
+</div>
+
+      <!-- Filter tabs -->
+<div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;align-items:center;flex-wrap:wrap">
+  <input type="text" id="ws-search" class="search-input" placeholder="Search..." oninput="showFilter(currentFilter)" style="max-width:200px">
+  <button class="ws-filter-pill tab-btn" data-filter="browse"   onclick="showFilter('browse',this)">Browse Workshops</button>
+  <button class="ws-filter-pill tab-btn" data-filter="enrolled" onclick="showFilter('enrolled',this)">My Enrolled</button>
+  <button class="ws-filter-pill tab-btn" data-filter="pending"  onclick="showFilter('pending',this)">My Pending</button>
+</div>
+
+      <!-- Workshop list -->
+      <div id="ws-list"></div>
+
+    </div><!-- /tab-workshops -->
+
+    <!-- ══ CERTIFICATIONS TAB ══ -->
+    <div id="tab-certifications" style="display:none">
+
+      <!-- KPIs -->
+<div class="stat-cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem">
+  <div class="stat-card highlight"><div class="stat-num" id="cert-stat-issued">—</div><div class="stat-label">Certificates issued</div><div class="stat-sub">Ready to download</div></div>
+  <div class="stat-card yellow"><div class="stat-num" id="cert-stat-eligible">—</div><div class="stat-label">Eligible — pending</div><div class="stat-sub">Awaiting staff issuance</div></div>
+  <div class="stat-card"><div class="stat-num" id="cert-stat-locked">—</div><div class="stat-label">Locked</div><div class="stat-sub">Complete sessions first</div></div>
+</div>
+
+      <div class="cert-two-col">
+
+        <!-- Issued -->
+        <div>
+          <h3 class="section-title-sm">Issued certificates</h3>
+          <div id="cert-issued-list"></div>
+        </div>
+
+        <!-- Eligible / Locked -->
+        <div>
+          <h3 class="section-title-sm">Eligible — awaiting issuance</h3>
+          <div id="cert-eligible-list"></div>
+          <h3 class="section-title-sm" style="margin-top:1.25rem">Locked</h3>
+          <div id="cert-locked-list"></div>
+        </div>
+
+      </div>
+
+    </div><!-- /tab-certifications -->
+
+  </main>
+</div><!-- /app-layout -->
+
+
+<!-- ══════════════════════════════════════
+     ENROLLMENT FORM MODAL (4-step)
+     ══════════════════════════════════════ -->
+<div id="enroll-modal" class="modal-overlay" onclick="closeModalOutside(event,'enroll-modal')">
+  <div class="modal-box enroll-modal-box" style="display:flex;flex-direction:column;max-height:90vh;overflow:hidden">
+
+    <!-- Header -->
+    <div class="enroll-modal-header">
+      <div>
+        <h3>Workshop Enrollment Form</h3>
+        <p class="modal-sub">UGAT Integrated Farm · San Isidro, Daet, Camarines Norte</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('enroll-modal')">✕</button>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="enroll-steps" id="enroll-step-indicator">
+      <div class="enroll-step active" id="estep-1"><span class="estep-num">1</span><span class="estep-lbl">Personal<br>Info</span></div>
+      <div class="enroll-step-line"></div>
+      <div class="enroll-step" id="estep-2"><span class="estep-num">2</span><span class="estep-lbl">Background</span></div>
+      <div class="enroll-step-line"></div>
+      <div class="enroll-step" id="estep-3"><span class="estep-num">3</span><span class="estep-lbl">Classification</span></div>
+      <div class="enroll-step-line"></div>
+      <div class="enroll-step" id="estep-4"><span class="estep-num">4</span><span class="estep-lbl">Review &<br>Submit</span></div>
+    </div>
+
+<!-- ── STEP 1: Personal Info ── -->
+<div id="enroll-page-1" class="enroll-page" style="flex:1;overflow-y:auto">
+  <h4 class="enroll-page-title">Personal Information</h4>
+
+  <!-- ID Photo upload -->
+  <div class="id-photo-row">
+    <div class="id-photo-box" onclick="document.getElementById('id-photo-input').click()">
+      <img id="id-photo-preview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)">
+      <div id="id-photo-placeholder">
+        <div style="font-size:2rem;color:#ccc">👤</div>
+        <p style="font-size:var(--text-tiny);color:var(--color-text-mid);text-align:center;margin-top:0.25rem">Click to upload<br>ID Picture</p>
+        <p style="font-size:9px;color:var(--color-text-light);text-align:center">or an ID-like photo</p>
+      </div>
+      <input type="file" id="id-photo-input" accept="image/*" style="display:none" onchange="previewIDPhoto(this)">
+    </div>
+    <div class="id-photo-reqs">
+      <p style="font-size:var(--text-body-sm);font-weight:700;color:var(--color-text)">Photo Requirements <span style="color:var(--color-danger)">*</span></p>
+      <p style="font-size:var(--text-caption);color:var(--color-text-mid);line-height:1.5">Recent photo (within 6 months) · Plain white/light background · Face clearly visible, no sunglasses or cap · Formal attire preferred · Max 2MB</p>
+      <div style="display:flex;gap:0.4rem;margin-top:0.35rem;align-items:center">
+        <span style="background:#e8f5e9;color:#4B8423;font-size:10px;font-weight:700;padding:0.15rem 0.5rem;border-radius:3px">JPG</span>
+        <span style="background:#e8f5e9;color:#4B8423;font-size:10px;font-weight:700;padding:0.15rem 0.5rem;border-radius:3px">PNG</span>
+        <span style="background:#e8f5e9;color:#4B8423;font-size:10px;font-weight:700;padding:0.15rem 0.5rem;border-radius:3px">GIF</span>
+        <span style="font-size:var(--text-tiny);color:var(--color-text-light);margin-left:0.25rem">Max 2MB</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name fields -->
+  <div class="form-row-3">
+    <div class="form-group"><label>Last Name, Extension Name (Jr./Sr.) *</label><input type="text" id="e-lastname" class="form-input" placeholder="eg. Dela Cruz"></div>
+    <div class="form-group"><label>First Name *</label><input type="text" id="e-firstname" class="form-input" placeholder="eg. Juan"></div>
+    <div class="form-group"><label>Middle Name</label><input type="text" id="e-middlename" class="form-input" placeholder="eg. Santos"></div>
+  </div>
+
+  <!-- Contact -->
+  <div class="form-row-2">
+    <div class="form-group">
+      <label>Contact Number *</label>
+      <input type="text" id="e-contact" class="form-input" placeholder="+63 9XX XXX XXXX">
+      <p class="field-hint" style="margin-top:0.25rem">📱 Used for SMS enrollment confirmation via Semaphore</p>
+    </div>
+    <div class="form-group">
+      <label>Email Address *</label>
+      <input type="email" id="e-email" class="form-input" placeholder="eg. juanc@gmail.com">
+    </div>
+  </div>
+
+  <!-- Complete Address — cascading dropdowns -->
+  <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">
+    Complete Permanent Mailing Address *
+  </p>
+
+  <div class="form-row-2" style="margin-bottom:0.6rem">
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Region *</label>
+      <select id="e-s1-region" class="form-input" onchange="onS1RegionChange()">
+        <option value="">Select region…</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Province *</label>
+      <select id="e-s1-province" class="form-input" onchange="onS1ProvinceChange()" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select province…</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row-2" style="margin-bottom:0.6rem">
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">City / Municipality *</label>
+      <select id="e-s1-city" class="form-input" onchange="onS1CityChange()" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select city…</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Barangay *</label>
+      <select id="e-s1-barangay" class="form-input" onchange="buildS1Address()" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select barangay…</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group" style="margin-bottom:0.75rem">
+    <label style="font-size:0.75rem;color:#777">House No. & Street (optional)</label>
+    <input type="text" id="e-s1-street" class="form-input" placeholder="e.g. 12 Rizal St." oninput="buildS1Address()">
+  </div>
+
+  <!-- Hidden fields for backward compatibility with collectEnrollData -->
+  <input type="hidden" id="e-address">
+  <input type="hidden" id="e-city">
+  <input type="hidden" id="e-province">
+  <input type="hidden" id="e-region">
+  <input type="hidden" id="e-barangay">
+
+  <div class="form-row-2">
+    <div class="form-group"><label>Nationality *</label><input type="text" id="e-nationality" class="form-input" placeholder="eg. Filipino"></div>
+  </div>
+
+  <div id="e-err-1" class="error-msg" style="display:none"></div>
+  <div class="enroll-footer">
+    <p class="enroll-step-hint">Step 1 of 4 · Fill in all required fields including ID picture</p>
+    <button class="btn-primary" onclick="enrollGoStep(2)">Next → Background</button>
+  </div>
+</div>
+
+<!-- ── STEP 2: Background ── -->
+<div id="enroll-page-2" class="enroll-page" style="flex:1;overflow-y:auto;display:none">
+  <h4 class="enroll-page-title">Personal Background</h4>
+
+  <div class="form-row-3">
+    <div class="form-group">
+      <label>Sex *</label>
+      <div class="radio-row">
+        <label class="radio-card"><input type="radio" name="e-sex" value="Male"> Male</label>
+        <label class="radio-card"><input type="radio" name="e-sex" value="Female"> Female</label>
+      </div>
+    </div>
+    <div class="form-group"><label>Civil Status *</label>
+      <select id="e-civil" class="form-input">
+        <option value="">Select</option>
+        <option>Single</option><option>Married</option>
+        <option>Separated / Divorced / Annulled</option>
+        <option>Widower/Widow</option><option>Common Law / Live-in</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Date of Birth *</label>
+      <input type="date" id="e-dob" class="form-input">
+    </div>
+  </div>
+
+  <!-- ── BIRTHPLACE — cascading dropdowns ── -->
+  <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">
+    Birthplace *
+  </p>
+  <div class="form-row-2" style="margin-bottom:0.6rem">
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Region</label>
+      <select id="e-bplace-region" class="form-input" onchange="onBplaceRegionChange()">
+        <option value="">Select region…</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Province</label>
+      <select id="e-bplace-province" class="form-input" onchange="onBplaceProvinceChange()" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select province…</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-row-2" style="margin-bottom:0.6rem">
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">City / Municipality</label>
+      <select id="e-bplace-city" class="form-input" onchange="onBplaceCityChange()" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select city…</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label style="font-size:0.75rem;color:#777">Barangay</label>
+      <select id="e-bplace-barangay" class="form-input" disabled style="opacity:0.55;cursor:not-allowed">
+        <option value="">Select barangay…</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label style="font-size:0.75rem;color:#777">House No. & Street (optional)</label>
+    <input type="text" id="e-bplace-street" class="form-input" placeholder="e.g. 12 Rizal St.">
+  </div>
+
+  <div class="form-group"><label>Educational Attainment *</label>
+    <div class="checkbox-grid-2">
+      <label class="radio-card"><input type="radio" name="e-edu" value="No Grade Completed"> No Grade Completed</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="High School Graduate"> High School Graduate</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="Junior High (K-12)"> Junior High (K-12)</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="Senior High (K-12)"> Senior High (K-12)</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="College Undergraduate"> College Undergraduate</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="College Graduate"> College Graduate</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="Masteral/Doctorate"> Masteral/Doctorate</label>
+      <label class="radio-card"><input type="radio" name="e-edu" value="Elementary Graduate"> Elementary Graduate</label>
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group"><label>Employment Status *</label>
+      <select id="e-emp-status" class="form-input">
+        <option value="">Select</option>
+        <option>Wage-Employed</option><option>Underemployed</option>
+        <option>Self-Employed</option><option>Unemployed</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Employment Type</label>
+      <select id="e-emp-type" class="form-input">
+        <option value="">Select</option>
+        <option>Regular</option><option>Casual</option><option>Job Order</option>
+        <option>Probationary</option><option>Permanent</option>
+        <option>Contractual</option><option>Temporary</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── PARENT/GUARDIAN ── -->
+  <div class="form-group">
+    <label>Parent/Guardian Name</label>
+    <input type="text" id="e-parent-name" class="form-input" placeholder="Full Name">
+  </div>
+
+  <p style="font-size:0.85rem;font-weight:600;margin-bottom:0.4rem">
+    Parent/Guardian Address
+  </p>
+
+  <!-- Same address checkbox -->
+  <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;
+                font-size:0.85rem;cursor:pointer;color:#4B8423;font-weight:500">
+    <input type="checkbox" id="e-parent-same-addr"
+           onchange="toggleParentSameAddress(this.checked)"
+           style="width:16px;height:16px;accent-color:#4B8423;cursor:pointer">
+    Same as my current address (Step 1)
+  </label>
+
+  <div id="e-parent-addr-fields">
+    <div class="form-row-2" style="margin-bottom:0.6rem">
+      <div class="form-group" style="margin:0">
+        <label style="font-size:0.75rem;color:#777">Region</label>
+        <select id="e-parent-region" class="form-input" onchange="onParentRegionChange()">
+          <option value="">Select region…</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label style="font-size:0.75rem;color:#777">Province</label>
+        <select id="e-parent-province" class="form-input" onchange="onParentProvinceChange()" disabled style="opacity:0.55;cursor:not-allowed">
+          <option value="">Select province…</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row-2" style="margin-bottom:0.6rem">
+      <div class="form-group" style="margin:0">
+        <label style="font-size:0.75rem;color:#777">City / Municipality</label>
+        <select id="e-parent-city" class="form-input" onchange="onParentCityChange()" disabled style="opacity:0.55;cursor:not-allowed">
+          <option value="">Select city…</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label style="font-size:0.75rem;color:#777">Barangay</label>
+        <select id="e-parent-barangay" class="form-input" disabled style="opacity:0.55;cursor:not-allowed">
+          <option value="">Select barangay…</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label style="font-size:0.75rem;color:#777">House No. & Street (optional)</label>
+      <input type="text" id="e-parent-street" class="form-input" placeholder="e.g. 12 Rizal St.">
+    </div>
+  </div>
+
+  <div id="e-err-2" class="error-msg" style="display:none"></div>
+  <div class="enroll-footer">
+    <p class="enroll-step-hint">Step 2 of 4 · Personal background</p>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn-outline" onclick="enrollGoStep(1)">← Back</button>
+      <button class="btn-primary" onclick="enrollGoStep(3)">Next → Classification</button>
+    </div>
+  </div>
+</div>
+
+    <!-- ── STEP 3: Classification ── -->
+<div id="enroll-page-3" class="enroll-page" style="flex:1;overflow-y:auto;display:none">
+      <h4 class="enroll-page-title">Classification & Workshop</h4>
+
+      <div class="form-group">
+<label>Learner/Trainee Classification *</label>
+<div class="checkbox-grid-2" style="margin-top:0.5rem">
+  <label class="radio-card"><input type="checkbox" name="e-class" value="4Ps Beneficiary"> 4Ps Beneficiary</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Agrarian Reform Beneficiary"> Agrarian Reform Beneficiary</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Displaced Workers"> Displaced Workers</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Industry Workers"> Industry Workers</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Family Members of AFP/PNP"> Family Members of AFP/PNP</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="TESDA Alumni"> TESDA Alumni</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Out-of-School Youth"> Out-of-School Youth</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="OFW / OFW Dependent"> OFW / OFW Dependent</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Rebel Returnees"> Rebel Returnees/Decommissioned Combatants</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="TVET Trainers"> TVET Trainers</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Farmers and Fishermen"> Farmers and Fishermen</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Uniformed Personnel"> Uniformed Personnel</label>
+  <label class="radio-card"><input type="checkbox" name="e-class" value="Victims of Natural Disasters"> Victims of Natural Disasters</label>
+  <label class="radio-card" id="e-class-others-label">
+    <input type="checkbox" name="e-class" value="Others"
+           onchange="toggleOthersBox(this.checked)"> Others (specify)
+  </label>
+</div>
+
+<!-- ADD THIS — outside the grid div, below it -->
+<div id="e-class-others-box" style="display:none;margin-top:0.5rem">
+  <input type="text" id="e-class-others-text" class="form-input"
+         placeholder="Please specify your classification…">
+</div>
+</div> 
+
+      <div class="form-group" style="margin-top:0.75rem">
+        <label>Are you a Person with Disability (PWD)? *</label>
+        <div class="radio-row" style="margin-top:0.4rem">
+          <label class="radio-card"><input type="radio" name="e-pwd" value="No"> No</label>
+          <label class="radio-card"><input type="radio" name="e-pwd" value="Yes - PWD"> Yes – PWD</label>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:0.75rem">
+        <label>Select a Workshop *</label>
+        <div class="workshop-select-grid" id="workshop-select-grid"></div>
+      </div>
+
+      <div id="e-err-3" class="error-msg" style="display:none"></div>
+      <div class="enroll-footer">
+        <p class="enroll-step-hint">Step 3 of 4 · Classification & workshop</p>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn-outline" onclick="enrollGoStep(2)">← Back</button>
+          <button class="btn-primary" onclick="enrollGoStep(4)">Next → Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: Review & Submit ── -->
+<div id="enroll-page-4" class="enroll-page" style="flex:1;overflow-y:auto;display:none">
+      <h4 class="enroll-page-title">Review & Submit</h4>
+
+      <div id="review-content"></div>
+
+      <label class="review-check-row">
+        <input type="checkbox" id="e-certify">
+        <span>I certify that all information provided is true and correct. I understand that false information may result in disqualification from the workshop.</span>
+      </label>
+
+      <div class="sms-info-box" id="review-sms-box" style="margin-top:0.75rem"></div>
+
+      <div id="e-err-4" class="error-msg" style="display:none"></div>
+      <div class="enroll-footer">
+        <p class="enroll-step-hint">Step 4 of 4 · Final step</p>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn-outline" onclick="enrollGoStep(3)">← Back</button>
+          <button class="btn-primary" onclick="submitEnrollment()">Submit Enrollment →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS SCREEN ── -->
+<div id="enroll-page-success" class="enroll-page" style="flex:1;overflow-y:auto;display:none;text-align:center;padding:2rem">
+      <div class="success-checkmark">✓</div>
+      <h3 style="font-size:1.25rem;font-weight:800;margin:1rem 0 0.5rem">Enrollment submitted successfully!</h3>
+      <p id="success-text" style="font-size:var(--text-body-sm);color:var(--color-text-mid);max-width:380px;margin:0 auto 1rem"></p>
+      <div class="sms-info-box" id="success-sms" style="max-width:440px;margin:0 auto 1.5rem;text-align:left"></div>
+      <button class="btn-primary" onclick="closeModal('enroll-modal');renderWorkshops()">Go to My Workshops →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Certificate view modal -->
+<div id="cert-view-modal" class="modal-overlay" onclick="closeModalOutside(event,'cert-view-modal')">
+  <div class="modal-box" style="max-width:820px">
+    <div class="modal-header">
+      <div><h3>Certificate Preview</h3></div>
+      <button class="modal-close" onclick="closeModal('cert-view-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem" id="cert-view-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="TraineeWorkshops.js?v=3"></script>
+<script src="nav_session.js"></script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+/*
+  LandingInner.css — UGAT TrainTrack
+  Shared styles for all inner landing pages:
+    LandingAbout.html, LandingFeatures.html,
+    LandingProducts.html, LandingContact.html
+
+  Each inner page uses:
+    - The same nav from Landing.css
+    - An .inner-hero banner at the top
+    - .inner-content as the main wrapper
+    - Page-specific section layouts defined here
+*/
+
+
+/* =============================================================================
+   INNER PAGE HERO BANNER
+   (replaces the full-bleed hero — compact centered banner)
+   ============================================================================= */
+
+.inner-hero {
+  background: linear-gradient(135deg, #f0f7ec 0%, #e6f2df 100%);
+  padding: 4rem 4rem 3rem;
+  border-bottom: 1px solid #ffffff;
+  text-align: center;
+}
+
+.inner-hero-text {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.inner-title {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  color: #3a7d1e;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.inner-desc {
+  font-size: var(--text-body);
+  color: #555;
+  line-height: var(--leading-relaxed);
+}
+
+
+/* =============================================================================
+   INNER CONTENT WRAPPER
+   ============================================================================= */
+
+.inner-content {
+  max-width: 1100px;
+  background: #ffffff;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 5rem;
+}
+
+.inner-section-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: #3a7d1e;
+  margin-bottom: 1.25rem;
+}
+
+
+/* =============================================================================
+   ABOUT PAGE
+   ============================================================================= */
+
+/* Mission / Vision two-column grid */
+.about-mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.about-card {
+  border: 1.5px solid #ddeedd;
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  background: #fff;
+}
+
+.about-card.green-card {
+  background: #f0f7ec;
+  border-color: #b5d9a0;
+}
+
+.about-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.about-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: #3a7d1e;
+  margin-bottom: 0.75rem;
+}
+
+.about-card p {
+  font-size: var(--text-body-sm);
+  color: #555;
+  line-height: var(--leading-relaxed);
+}
+
+/* About system: text + image side by side */
+.about-system {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.about-system-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: #3a7d1e;
+  margin-bottom: 1rem;
+}
+
+.about-system-text p {
+  font-size: var(--text-body-sm);
+  color: #555;
+  line-height: var(--leading-relaxed);
+  margin-bottom: 0.75rem;
+}
+
+.about-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.about-list li {
+  font-size: var(--text-body-sm);
+  color: #444;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.about-system-img img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  height: 320px;
+}
+
+/* Location badge */
+.about-location {
+  background: #f0f7ec;
+  border: 1.5px solid #b5d9a0;
+  border-radius: var(--radius-md);
+  padding: 1.5rem 2rem;
+}
+
+.about-location-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.about-location-badge h3 {
+  font-weight: var(--weight-bold);
+  color: #3a7d1e;
+  margin-bottom: 0.2rem;
+}
+
+.about-location-badge p {
+  color: #555;
+  font-size: var(--text-body-sm);
+}
+
+
+/* =============================================================================
+   FEATURES PAGE
+   ============================================================================= */
+
+.features-big-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.feature-big-card {
+  background: #fff;
+  border: 1.5px solid #ddeedd;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.feature-big-card:hover {
+  box-shadow: 0 6px 20px rgba(58,125,30,0.10);
+  transform: translateY(-3px);
+}
+
+.fbcard-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.feature-big-card h3 {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body-lg);
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.feature-big-card p {
+  font-size: var(--text-body-sm);
+  color: #666;
+  line-height: var(--leading-relaxed);
+}
+
+
+/* =============================================================================
+   PRODUCTS PAGE
+   ============================================================================= */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.product-card {
+  background: #fff;
+  border: 1.5px solid #ddeedd;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.product-card:hover {
+  box-shadow: 0 6px 20px rgba(58,125,30,0.10);
+  transform: translateY(-3px);
+}
+
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-body {
+  padding: 1rem;
+}
+
+.product-cat {
+  font-size: var(--text-tiny);
+  font-weight: var(--weight-bold);
+  color: #3a7d1e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.product-body h3 {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  margin-bottom: 0.3rem;
+  color: #1a1a1a;
+}
+
+.product-body p {
+  font-size: var(--text-body-sm);
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: var(--leading-snug);
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: var(--weight-extrabold);
+  color: #3a7d1e;
+}
+
+.products-cta-banner {
+  background: #f0f7ec;
+  border: 1.5px solid #b5d9a0;
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  margin-top: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.products-cta-banner p {
+  font-size: var(--text-body);
+  color: #444;
+  font-weight: var(--weight-medium);
+}
+
+
+/* =============================================================================
+   CONTACT PAGE
+   ============================================================================= */
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.contact-info h2,
+.contact-form-wrap h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: #3a7d1e;
+  margin-bottom: 1.5rem;
+}
+
+.contact-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.contact-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.contact-item strong {
+  display: block;
+  font-weight: var(--weight-bold);
+  color: #1a1a1a;
+  margin-bottom: 0.2rem;
+  font-size: var(--text-body-sm);
+}
+
+.contact-item p {
+  color: #555;
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-snug);
+}
+
+.contact-login-prompt {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddeedd;
+}
+
+.contact-login-prompt p {
+  font-size: var(--text-body-sm);
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.contact-form-wrap {
+  background: #fff;
+  border: 1.5px solid #ddeedd;
+  border-radius: var(--radius-md);
+  padding: 2rem;
+}
+
+.contact-textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 900px) {
+  .about-mv-grid,
+  .about-system,
+  .contact-layout { grid-template-columns: 1fr; }
+
+  .features-big-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .inner-hero { padding: 2.5rem 1.5rem; }
+  .inner-content { padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 560px) {
+  .features-big-grid,
+  .products-grid { grid-template-columns: 1fr; }
+
+  .inner-title { font-size: 2rem; }
+}

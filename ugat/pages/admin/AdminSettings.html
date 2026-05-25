@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminSettings.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html" class="nav-link">Dashboard</a>
+      <a href="AdminWorkshops.html" class="nav-link">Programs</a>
+      <a href="AdminInventory.html" class="nav-link">Inventory</a>
+      <a href="AdminReports.html"   class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user" id="nav-user-menu">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Admin</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-content">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">System Settings</h2>
+        <p class="page-sub">Configure your UGAT TrainTrack system — organization, SMS, notifications, and more</p>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+
+      <nav class="settings-sidenav">
+        <button class="settings-nav-item active" onclick="showSection('org',      this)">Organization</button>
+        <button class="settings-nav-item"        onclick="showSection('sms',      this)">SMS / Notifications</button>
+        <button class="settings-nav-item"        onclick="showSection('certs',    this)">Certifications</button>
+        <button class="settings-nav-item"        onclick="showSection('workshops',this)">Workshops</button>
+        <button class="settings-nav-item"        onclick="showSection('users',    this)">Admin Users</button>
+        <button class="settings-nav-item"        onclick="showSection('system',   this)">System</button>
+        <button class="settings-nav-item"        onclick="showSection('payment',  this)">Payment</button>
+      </nav>
+
+      <div class="settings-content">
+
+        <!-- ── ORGANIZATION ── -->
+        <div id="section-org" class="settings-panel">
+          <h3 class="settings-panel-title">Organization Information</h3>
+          <p class="settings-panel-sub">Basic information about your farm and training program</p>
+          <div class="form-row-2">
+            <div class="form-group"><label>Organization Name *</label><input type="text" id="org-name" class="form-input" placeholder="e.g. UGAT Integrated Farm"></div>
+            <div class="form-group"><label>Short Name / Acronym</label><input type="text" id="org-short-name" class="form-input" placeholder="e.g. UGAT"></div>
+          </div>
+          <div class="form-group"><label>Address</label><input type="text" id="org-address" class="form-input" placeholder="Full address"></div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Contact Email</label><input type="email" id="org-email" class="form-input" placeholder="info@ugat.ph"></div>
+            <div class="form-group"><label>Contact Number</label><input type="text" id="org-phone" class="form-input" placeholder="+63 9XX XXX XXXX" maxlength="13"></div>
+          </div>
+          <div class="form-group"><label>Website / Social Media</label><input type="text" id="org-website" class="form-input" placeholder="https://…"></div>
+          <div class="form-group"><label>Program Description</label><textarea id="org-description" class="form-input" rows="3" placeholder="Brief description of your program"></textarea></div>
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="saveSection('org')">Save Organization Info</button>
+          </div>
+        </div>
+
+        <!-- ── SMS / NOTIFICATIONS ── -->
+        <div id="section-sms" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">SMS & Notifications</h3>
+          <p class="settings-panel-sub">Configure UniSMS API for certificate and reminder notifications</p>
+          <div class="settings-info-box">
+            📡 UGAT TrainTrack uses <strong>UniSMS</strong> to send SMS notifications. Get your free API key at <strong>unismsapi.com</strong>.
+          </div>
+          <div class="form-group">
+            <label>UniSMS API Key *</label>
+            <div class="pw-input-wrap">
+              <input type="password" id="sms-api-key" class="form-input" placeholder="Enter your UniSMS API key (sk_…)">
+              <button class="pw-toggle" onclick="togglePw('sms-api-key',this)">👁</button>
+            </div>
+          </div>
+          <h4 class="settings-subsection">Notification Triggers</h4>
+          <div class="settings-toggle-row">
+            <div><div class="toggle-label">Certificate Issuance</div><div class="toggle-sub">Send SMS when a certificate is issued</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="sms-cert"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-toggle-row">
+            <div><div class="toggle-label">Session Reminder</div><div class="toggle-sub">Send SMS 1 day before a session</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="sms-reminder"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-toggle-row">
+            <div><div class="toggle-label">Enrollment Confirmation</div><div class="toggle-sub">Send SMS when trainee is enrolled</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="sms-enrollment"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-toggle-row">
+            <div><div class="toggle-label">Absence Alert</div><div class="toggle-sub">Send SMS when trainee is marked absent</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="sms-absence"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-save-row">
+            <button class="btn-secondary" onclick="testSMS()">📱 Send Test SMS</button>
+            <button class="btn-primary"   onclick="saveSection('sms')">Save SMS Settings</button>
+          </div>
+        </div>
+
+        <!-- ── CERTIFICATIONS ── -->
+        <div id="section-certs" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">Certification Settings</h3>
+          <p class="settings-panel-sub">Configure certificate templates and issuance rules</p>
+          <div class="form-group"><label>Certificate Title</label><input type="text" id="cert-title" class="form-input" placeholder="Certificate of Completion"></div>
+          <div class="form-group"><label>Issuing Authority (appears on certificate)</label><input type="text" id="cert-authority" class="form-input" placeholder="UGAT Integrated Farm"></div>
+          <div class="form-group"><label>Signatory Name</label><input type="text" id="cert-signatory" class="form-input" placeholder="Program Officer, UGAT Integrated Farm"></div>
+          <div class="form-group"><label>Certificate Number Prefix</label><input type="text" id="cert-prefix" class="form-input" placeholder="e.g. UGAT-2026-"></div>
+          <h4 class="settings-subsection">Eligibility Rules</h4>
+          <div class="form-row-2">
+            <div class="form-group"><label>Minimum Attendance Rate (%)</label><input type="number" id="cert-threshold" class="form-input" min="0" max="100"></div>
+            <div class="form-group"><label>Minimum Sessions Attended</label><input type="number" id="cert-min-sessions" class="form-input" min="1"></div>
+          </div>
+          <div class="settings-toggle-row">
+            <div><div class="toggle-label">Auto-flag eligible trainees</div><div class="toggle-sub">Automatically mark trainees as eligible when requirements are met</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="cert-auto-flag"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="saveSection('certs')">Save Certification Settings</button>
+          </div>
+        </div>
+
+        <!-- ── WORKSHOPS ── -->
+        <div id="section-workshops" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">Workshop Defaults</h3>
+          <p class="settings-panel-sub">Default values used when creating new workshops</p>
+          <div class="form-group"><label>Default Location</label><input type="text" id="ws-location" class="form-input" placeholder="UGAT Demo Farm, San Isidro, Daet"></div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Default Max Slots</label><input type="number" id="ws-max-slots" class="form-input" min="1"></div>
+            <div class="form-group"><label>Default Session Time</label><input type="text" id="ws-time" class="form-input" placeholder="8:00 AM – 5:00 PM"></div>
+          </div>
+          <div class="form-group"><label>Workshop Categories</label><textarea id="ws-categories" class="form-input" rows="4" placeholder="One per line&#10;Urban Farming&#10;Specialty Farming&#10;Tech Farming"></textarea></div>
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="saveSection('workshops')">Save Workshop Defaults</button>
+          </div>
+        </div>
+
+        <!-- ── ADMIN USERS ── -->
+        <div id="section-users" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">Admin Users</h3>
+          <p class="settings-panel-sub">Manage who has access to this system</p>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last Login</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="admin-users-tbody">
+                <tr><td colspan="6" style="text-align:center;padding:1rem;color:#aaa">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="showToast('Invite User coming soon')">+ Invite User</button>
+          </div>
+        </div>
+
+        <!-- ── SYSTEM ── -->
+        <div id="section-system" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">System Configuration</h3>
+          <p class="settings-panel-sub">Technical settings and data management</p>
+          <div class="form-row-2">
+            <div class="form-group"><label>System Timezone</label>
+              <select id="sys-timezone" class="form-input">
+                <option value="Asia/Manila">Asia/Manila (PHT, UTC+8)</option>
+                <option value="UTC">UTC</option>
+                <option value="Asia/Singapore">Asia/Singapore (SGT, UTC+8)</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Date Format</label>
+              <select id="sys-date-format" class="form-input">
+                <option value="MMM D, YYYY">MMM D, YYYY (Apr 15, 2026)</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>System Language</label>
+            <select id="sys-language" class="form-input">
+              <option value="English">English</option>
+              <option value="Filipino">Filipino</option>
+            </select>
+          </div>
+          <h4 class="settings-subsection">Data Management</h4>
+          <div class="settings-action-row">
+            <div><div class="toggle-label">Export All Data</div><div class="toggle-sub">Download a full backup of all trainee, workshop, and attendance data</div></div>
+            <button class="btn-secondary" onclick="exportAllData()">Export CSV</button>
+          </div>
+          <div class="settings-action-row">
+            <div><div class="toggle-label" style="color:var(--color-danger)">Clear Test Data</div><div class="toggle-sub">Remove all sample data from the system. This cannot be undone.</div></div>
+            <button class="btn-primary" style="background:var(--color-danger)" onclick="showToast('⚠️ This would clear all test data.')">Clear Data</button>
+          </div>
+          <h4 class="settings-subsection">About</h4>
+          <div class="settings-about">
+            <div class="settings-about-row"><span>System</span><strong>UGAT TrainTrack</strong></div>
+            <div class="settings-about-row"><span>Version</span><strong>1.0.0</strong></div>
+            <div class="settings-about-row"><span>Environment</span><strong>Production</strong></div>
+            <div class="settings-about-row"><span>Built for</span><strong>UGAT Integrated Farm, San Isidro, Daet</strong></div>
+          </div>
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="saveSection('system')">Save System Settings</button>
+          </div>
+        </div>
+
+        <!-- Payment Settings -->
+        <div id="section-payment" class="settings-panel" style="display:none">
+          <h3 class="settings-panel-title">Payment Settings</h3>
+          <p class="settings-panel-sub">Configure GCash QR code and account details shown during checkout</p>
+
+          <h4 class="settings-subsection">GCash QR Code</h4>
+          <div class="form-group">
+            <label>GCash Account Name</label>
+            <input type="text" id="pay-gcash-name" class="form-input" placeholder="e.g. UGAT Integrated Farm">
+            <div class="form-hint">Displayed below the QR code so buyers know who to send money to.</div>
+          </div>
+          <div class="form-group">
+            <label>GCash QR Code Image</label>
+            <div style="display:flex;align-items:flex-start;gap:1.25rem;flex-wrap:wrap">
+              <div id="pay-qr-preview" style="width:160px;height:160px;border:2px dashed #ccc;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#f9f9f9;overflow:hidden;flex-shrink:0">
+                <span id="pay-qr-placeholder" style="color:#aaa;font-size:0.78rem;text-align:center;padding:0.5rem">No QR code<br>uploaded yet</span>
+                <img id="pay-qr-img" src="" alt="GCash QR" style="display:none;width:100%;height:100%;object-fit:contain">
+              </div>
+              <div style="flex:1;min-width:200px">
+                <input type="file" id="pay-qr-file" accept="image/*" style="display:none" onchange="previewQRCode(this)">
+                <button class="btn-secondary" onclick="document.getElementById('pay-qr-file').click()">📁 Choose QR Image</button>
+                <div class="form-hint" style="margin-top:0.5rem">Upload the QR code image from your GCash app. Accepted: JPG, JFIF, PNG, WebP, GIF. Max 5 MB.</div>
+                <button class="btn-primary" id="pay-qr-upload-btn" style="margin-top:0.75rem;display:none" onclick="uploadGCashQR()">⬆ Upload QR Code</button>
+                <div id="pay-qr-status" style="margin-top:0.5rem;font-size:0.8rem"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-save-row">
+            <button class="btn-primary" onclick="saveSection('payment')">Save Payment Settings</button>
+          </div>
+        </div>
+
+      </div><!-- /settings-content -->
+    </div><!-- /settings-layout -->
+  </main>
+</div>
+
+
+<!-- EDIT ADMIN USER MODAL -->
+<div id="edit-user-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-user-modal')">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-header">
+      <div><h3>Edit Admin User</h3><p class="modal-sub">Update name and account status</p></div>
+      <button class="modal-close" onclick="closeModal('edit-user-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+      <div class="form-row-2">
+        <div class="form-group" style="margin:0"><label>First Name</label><input type="text" id="eu-first" class="form-input"></div>
+        <div class="form-group" style="margin:0"><label>Last Name</label><input type="text" id="eu-last" class="form-input"></div>
+      </div>
+      <div class="form-group" style="margin:0"><label>Email</label><input type="email" id="eu-email" class="form-input" disabled style="background:#f5f5f5;color:#888"></div>
+      <div class="form-group" style="margin:0">
+        <label>Role</label>
+        <select id="eu-role" class="form-input">
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Status</label>
+        <select id="eu-status" class="form-input">
+          <option value="1">Active</option>
+          <option value="0">Inactive</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>New Password <span class="light-txt">(leave blank to keep current)</span></label>
+        <div class="pw-input-wrap">
+          <input type="password" id="eu-password" class="form-input" placeholder="Enter new password…">
+          <button class="pw-toggle" onclick="togglePw('eu-password',this)">👁</button>
+        </div>
+      </div>
+      <input type="hidden" id="eu-id">
+      <div id="eu-error" class="error-msg" style="display:none"></div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.75rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-user-modal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEditUser()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="AdminSettings.js"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

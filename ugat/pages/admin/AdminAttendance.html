@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<!--
+  AdminAttendance.html — UGAT TrainTrack
+  Admin: view and manage all trainee attendance records across workshops and sessions.
+
+  Linked files:
+    Styles  : ../css/styles.css       (shared design system)
+    Styles  : AdminAttendance.css     (page-specific layout)
+    Scripts : AdminAttendance.js      (search, filter, view-mode switch,
+                                       date filters, view modal, export, toast)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminAttendance.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== ADMIN NAVIGATION ===== -->
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html"> 
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html"      class="nav-link">Dashboard</a>
+      <a href="AdminTrainees.html"       class="nav-link">Trainees</a>
+      <a href="AdminWorkshops.html"      class="nav-link">Workshops</a>
+      <a href="AdminAttendance.html"     class="nav-link active">Attendance</a>
+      <a href="AdminCertifications.html" class="nav-link">Certifications</a>
+      <a href="AdminInventory.html"      class="nav-link">Inventory</a>
+      <a href="#"                        class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user">
+      <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+      <span>Admin ▾</span>
+      <button class="btn-logout" onclick="window.location.href='Login.html'">Logout</button>
+    </div>
+  </nav>
+
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="app-content">
+
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Attendance</h2>
+        <p class="page-sub">View and manage attendance records across all workshops and trainees</p>
+      </div>
+    </div>
+
+    <!-- Overview metrics -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">124</div>
+        <div class="stat-label">Total session records</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-num" id="stat-present">98</div>
+        <div class="stat-label">Present</div>
+        <div class="stat-sub" id="stat-present-pct">● 79% overall rate</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-num" id="stat-absent">14</div>
+        <div class="stat-label">Absent</div>
+        <div class="stat-sub">● 11% of all records</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-num" id="stat-late">12</div>
+        <div class="stat-label">Late</div>
+        <div class="stat-sub">● 10% of all records</div>
+      </div>
+    </div>
+
+    <!-- Search + filters row -->
+    <div class="table-filters">
+      <!-- Live search -->
+      <input
+        type="text"
+        id="att-search"
+        placeholder="Search trainee or workshop..."
+        class="search-input"
+        oninput="applyFilters()"
+      >
+
+      <!-- Status filter -->
+      <select class="filter-select" id="att-filter-status" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="Completed">Completed</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Incomplete">Incomplete</option>
+      </select>
+
+      <!-- Workshop filter -->
+      <select class="filter-select" id="att-filter-workshop" onchange="applyFilters()">
+        <option value="">All Workshops</option>
+        <option>Seed Saving &amp; Propagation</option>
+        <option>Organic Pest Management</option>
+        <option>Mushroom Cultivation</option>
+        <option>Organic Urban Gardening</option>
+      </select>
+
+      <!-- Session filter -->
+      <select class="filter-select" id="att-filter-session" onchange="applyFilters()">
+        <option value="">All Sessions</option>
+        <option value="1">1 session</option>
+        <option value="2">2 sessions</option>
+        <option value="3">3 sessions</option>
+      </select>
+    </div>
+
+    <!-- View mode + date filters row -->
+    <div class="table-filters" style="margin-top:-0.25rem">
+      <!-- View mode tabs -->
+      <div class="filter-btns">
+        <button class="tab-btn active" id="view-btn-trainee"   onclick="switchView('trainee',  this)">By Trainee</button>
+        <button class="tab-btn"        id="view-btn-workshop"  onclick="switchView('workshop', this)">By Workshop</button>
+        <button class="tab-btn"        id="view-btn-session"   onclick="switchView('session',  this)">By Session</button>
+      </div>
+
+      <!-- Date quick-filters -->
+      <button class="tab-btn" id="date-btn-today"     onclick="filterByDate('today',     this)">Today</button>
+      <button class="tab-btn" id="date-btn-yesterday" onclick="filterByDate('yesterday', this)">Yesterday</button>
+      <button class="tab-btn" id="date-btn-all"       onclick="filterByDate('all',       this)">All Dates</button>
+
+      <!-- Sort -->
+      <select class="filter-select" id="att-sort" onchange="applyFilters()">
+        <option value="newest">Sort: Newest</option>
+        <option value="name">Sort: Name A–Z</option>
+        <option value="rate-desc">Sort: Rate ↓</option>
+        <option value="rate-asc">Sort: Rate ↑</option>
+      </select>
+    </div>
+
+    <!-- Table header + export -->
+    <div class="table-header-row">
+      <h3 id="att-table-heading">All trainee attendance records</h3>
+      <button class="btn-secondary" onclick="exportReport()">Export Report</button>
+    </div>
+
+    <!-- Legend -->
+    <p class="legend-txt">
+      Each dot = one session &nbsp;·&nbsp;
+      <span class="dot-P" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">P</span> Present &nbsp;·&nbsp;
+      <span class="dot-A" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">A</span> Absent &nbsp;·&nbsp;
+      <span class="dot-L" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">L</span> Late &nbsp;·&nbsp;
+      <span class="dot-dash" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">–</span> Upcoming
+    </p>
+
+    <!-- ── BY TRAINEE VIEW (default) ── -->
+    <div id="view-trainee" class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Trainee</th>
+            <th>Workshop</th>
+            <th>Sessions</th>
+            <th>Progress</th>
+            <th>Attendance Rate</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="att-trainee-tbody">
+          <!-- injected by AdminAttendance.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── BY WORKSHOP VIEW ── -->
+    <div id="view-workshop" class="data-table-wrap" style="display:none">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Workshop</th>
+            <th>Sessions</th>
+            <th>Enrolled</th>
+            <th>Avg. Attendance</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Late</th>
+          </tr>
+        </thead>
+        <tbody id="att-workshop-tbody">
+          <!-- injected by AdminAttendance.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── BY SESSION VIEW ── -->
+    <div id="view-session" class="data-table-wrap" style="display:none">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Workshop</th>
+            <th>Session</th>
+            <th>Date</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Late</th>
+            <th>Attendance Rate</th>
+          </tr>
+        </thead>
+        <tbody id="att-session-tbody">
+          <!-- injected by AdminAttendance.js -->
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+
+<!-- =======================================================
+     MODAL: TRAINEE ATTENDANCE DETAIL
+     Shows full session breakdown for one trainee + edit marks
+     ======================================================= -->
+<div id="att-detail-modal" class="modal-overlay" onclick="closeModalOutside(event,'att-detail-modal')">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <div>
+        <h3 id="att-detail-title">Attendance Detail</h3>
+        <p class="modal-sub" id="att-detail-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal('att-detail-modal')">✕</button>
+    </div>
+
+    <!-- Trainee summary bar -->
+    <div class="att-detail-summary" id="att-detail-summary"></div>
+
+    <!-- Session-by-session breakdown table -->
+    <div class="att-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody id="att-detail-tbody"></tbody>
+      </table>
+    </div>
+
+    <div style="padding:1rem 1.5rem;display:flex;justify-content:flex-end;gap:0.75rem;border-top:1px solid var(--color-border)">
+      <button class="btn-outline" onclick="closeModal('att-detail-modal')">Close</button>
+      <button class="btn-primary" onclick="saveAttendanceEdits()">Save Changes</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- =======================================================
+     MODAL: EXPORT REPORT
+     Choose format and scope, then download
+     ======================================================= -->
+<div id="export-modal" class="modal-overlay" onclick="closeModalOutside(event,'export-modal')">
+  <div class="modal-box" style="max-width:460px">
+
+    <div class="modal-header">
+      <div><h3>Export Attendance Report</h3><p class="modal-sub">Choose scope and format</p></div>
+      <button class="modal-close" onclick="closeModal('export-modal')">✕</button>
+    </div>
+
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+
+      <div class="form-group">
+        <label for="exp-scope">Report Scope</label>
+        <select id="exp-scope" class="form-input">
+          <option value="all">All trainees, all workshops</option>
+          <option value="workshop">Specific workshop only</option>
+          <option value="trainee">Specific trainee only</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="exp-format">File Format</label>
+        <select id="exp-format" class="form-input">
+          <option value="csv">CSV (Excel-compatible)</option>
+          <option value="pdf">PDF summary</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="exp-date-from">Date Range — From</label>
+        <input type="date" id="exp-date-from" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label for="exp-date-to">Date Range — To</label>
+        <input type="date" id="exp-date-to" class="form-input">
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.5rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('export-modal')">Cancel</button>
+        <button class="btn-primary" onclick="doExport()">Download Report</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div id="toast" class="toast"></div>
+<script src="admin_nav_session.js"></script>
+<script src="AdminAttendance.js"></script>
+</body>
+</html>

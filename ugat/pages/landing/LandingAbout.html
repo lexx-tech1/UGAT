@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+  LandingAbout.html — UGAT TrainTrack
+  About page: UGAT Integrated Farm background, mission, and team.
+
+  Linked files:
+    Styles  : ../css/styles.css, Landing.css
+    Scripts : Landing.js
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="Landing.css">
+  <link rel="stylesheet" href="LandingInner.css">
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-logo-wrap">
+      <a href="Landing.html" class="nav-logo-link">
+        <img src="../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" class="nav-logo-fallback" style="display:none">
+          <span>🌱</span><span class="logo-text">UGAT</span>
+        </div>
+      </a>
+    </div>
+    <ul class="nav-links" role="list">
+      <li><a href="Landing.html"         class="nav-link">Home</a></li>
+      <li><a href="LandingAbout.html"    class="nav-link active">About</a></li>
+      <li><a href="LandingFeatures.html" class="nav-link">Features</a></li>
+      <li><a href="LandingProducts.html" class="nav-link">Products</a></li>
+      <li><a href="LandingContact.html"  class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav-cta" onclick="goToLogin()">Create Account &nbsp;→</button>
+    </div>
+  </nav>
+
+
+  <!-- PAGE HERO BANNER -->
+  <section class="inner-hero">
+    <div class="inner-hero-text">
+      <p class="hero-sub">WHO WE ARE</p>
+      <h1 class="inner-title">About UGAT</h1>
+      <p class="inner-desc">UGAT Integrated Farm is a community-based training center in San Isidro, Daet, Camarines Norte dedicated to sustainable agriculture and livelihood empowerment.</p>
+    </div>
+  </section>
+
+
+  <!-- CONTENT -->
+  <main class="inner-content">
+
+    <!-- Mission & Vision -->
+    <section class="about-mv-grid">
+      <div class="about-card green-card">
+        <div class="about-card-icon">🌱</div>
+        <h2>Our Mission</h2>
+        <p>To empower local communities through hands-on agricultural training, equipping individuals with the skills and knowledge needed for sustainable farming and food security.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🔭</div>
+        <h2>Our Vision</h2>
+        <p>A community where every household practices sustainable agriculture, with access to training, certification, and a reliable farm product marketplace.</p>
+      </div>
+    </section>
+
+    <!-- About the system -->
+    <section class="about-system">
+      <div class="about-system-text">
+        <h2>About TrainTrack</h2>
+        <p>UGAT TrainTrack is the official management system of UGAT Integrated Farm. It centralizes all trainee records, workshop scheduling, session attendance, certificate issuance, and farm product inventory in one digital platform.</p>
+        <p>The system bridges admin staff and trainees — admins manage operations while trainees track their own progress, certifications, and shop for farm products anytime.</p>
+        <ul class="about-list">
+          <li>✅ Paperless enrollment and attendance</li>
+          <li>✅ Automated certificate eligibility tracking</li>
+          <li>✅ SMS notifications via Semaphore API</li>
+          <li>✅ Live inventory alerts for kits and farm products</li>
+        </ul>
+        <button class="btn-hero" onclick="goToLogin()" style="margin-top:1.5rem">Get Started →</button>
+      </div>
+      <div class="about-system-img">
+        <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80" alt="UGAT Farm">
+      </div>
+    </section>
+
+    <!-- Location -->
+    <section class="about-location">
+      <div class="about-location-badge">
+        <span style="font-size:2rem">📍</span>
+        <div>
+          <h3>Where to find us</h3>
+          <p>San Isidro, Daet, Camarines Norte, Region V — Philippines</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="Landing.js"></script>
+</body>
+</html>

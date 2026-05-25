@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!--
+  AdminDashboard.html — UGAT TrainTrack
+  Full admin dashboard with live charts, KPIs, activity feed, alerts, and quick actions.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminDashboard.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== NAV ===== -->
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html" class="nav-link active">Dashboard</a>
+      <a href="AdminWorkshops.html" class="nav-link">Programs</a>
+      <a href="AdminInventory.html" class="nav-link">Inventory</a>
+      <a href="AdminReports.html"   class="nav-link">Reports</a>
+    </div>
+            <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)" id="user-trigger">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Maria Santos</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/logout.php" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="app-content dash-content">
+
+    <!-- ── Welcome header ── -->
+    <div class="dash-welcome">
+      <div class="dash-welcome-text">
+        <p class="dash-greeting">Good morning 👋</p>
+        <h2 class="dash-title">Admin Dashboard</h2>
+        <p class="dash-sub">Here's what's happening at UGAT Integrated Farm today.</p>
+      </div>
+      <div class="dash-welcome-actions">
+        <button class="btn-secondary" onclick="window.location.href='AdminWorkshops.html?tab=trainees'">+ Add Trainee</button>
+        <button class="btn-primary"   onclick="window.location.href='AdminWorkshops.html?tab=workshops'">+ New Workshop</button>
+      </div>
+    </div>
+
+<!-- ── KPI Cards ── -->
+    <div class="stat-cards" style="grid-template-columns:repeat(5,1fr);margin-bottom:1.5rem">
+      <div class="stat-card highlight">
+        <div class="stat-num" id="kpi-trainees">—</div>
+        <div class="stat-label">Total Trainees</div>
+        <div class="stat-sub" id="kpi-trainees-sub">loading…</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="kpi-workshops">—</div>
+        <div class="stat-label">Active Workshops</div>
+        <div class="stat-sub" id="kpi-workshops-sub">loading…</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-num" id="kpi-attendance">—</div>
+        <div class="stat-label">Avg. Attendance Rate</div>
+        <div class="stat-sub">vs last month</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-num" id="kpi-certs">—</div>
+        <div class="stat-label">Certificates Issued</div>
+        <div class="stat-sub" id="kpi-certs-sub">loading…</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-num" id="kpi-stock">—</div>
+        <div class="stat-label">Stock Alerts</div>
+        <div class="stat-sub" id="kpi-stock-sub">loading…</div>
+      </div>
+    </div>
+
+    <!-- ── MAIN GRID ── -->
+    <div class="dash-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="dash-col-main">
+
+        <!-- Trainee Enrollment Chart -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Trainee Enrollment</h3>
+              <p class="dash-card-sub">Monthly new enrollments — 2026</p>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-dot" style="background:#4B8423"></span> Enrolled
+              <span class="legend-dot" style="background:#8dc63f;margin-left:0.75rem"></span> Certified
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="enrollment-chart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Workshop Attendance Chart -->
+        <div class="dash-card" style="margin-top:1.25rem">
+          <div class="dash-card-header">
+            <div>
+              <h3 class="dash-card-title">Workshop Attendance Overview</h3>
+              <p class="dash-card-sub">Present / Late / Absent across all active workshops</p>
+            </div>
+          </div>
+          <div class="attendance-bars" id="attendance-bars"></div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="dash-card" style="margin-top:1.25rem">
+          <div class="dash-card-header">
+            <h3 class="dash-card-title">Upcoming Sessions</h3>
+            <a class="dash-view-all" href="AdminWorkshops.html?tab=workshops">View all →</a>
+          </div>
+          <div id="upcoming-sessions"></div>
+        </div>
+
+      </div><!-- /col-main -->
+
+      <!-- RIGHT COLUMN -->
+      <div class="dash-col-side">
+
+        <!-- Certification Progress Donut -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3 class="dash-card-title">Certification Status</h3>
+          </div>
+          <div class="donut-wrap">
+            <canvas id="cert-donut" width="160" height="160"></canvas>
+          <div class="donut-center">
+            <span class="donut-num" id="donut-num">—</span>
+            <span class="donut-lbl">Issued</span>
+          </div>
+          </div>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+
+        <!-- Stock Alerts -->
+        <div class="dash-card" style="margin-top:1.25rem">
+          <div class="dash-card-header">
+            <h3 class="dash-card-title">⚠ Stock Alerts</h3>
+            <a class="dash-view-all" href="AdminInventory.html">View all →</a>
+          </div>
+          <div id="stock-alerts-list"></div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="dash-card" style="margin-top:1.25rem">
+          <div class="dash-card-header">
+            <h3 class="dash-card-title">Recent Activity</h3>
+          </div>
+          <div id="activity-feed"></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dash-card dash-quick-actions" style="margin-top:1.25rem">
+          <h3 class="dash-card-title" style="margin-bottom:0.85rem">Quick Actions</h3>
+          <button class="qa-btn" onclick="window.location.href='AdminWorkshops.html?tab=trainees'">
+            <span class="qa-icon">👤</span> Add New Trainee
+          </button>
+          <button class="qa-btn" onclick="window.location.href='AdminWorkshops.html?tab=attendance'">
+            <span class="qa-icon">📋</span> Log Attendance
+          </button>
+          <button class="qa-btn" onclick="window.location.href='AdminWorkshops.html?tab=certifications'">
+            <span class="qa-icon">🎓</span> Issue Certificate
+          </button>
+          <button class="qa-btn" onclick="window.location.href='AdminInventory.html'">
+            <span class="qa-icon">📦</span> Manage Inventory
+          </button>
+        </div>
+
+      </div><!-- /col-side -->
+
+    </div><!-- /dash-grid -->
+
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="AdminDashboard.js"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

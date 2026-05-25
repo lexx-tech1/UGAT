@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+  LandingContact.html — UGAT TrainTrack
+  Contact page: farm location, contact details, and inquiry form.
+
+  Linked files:
+    Styles  : ../css/styles.css, Landing.css, LandingInner.css
+    Scripts : Landing.js
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="Landing.css">
+  <link rel="stylesheet" href="LandingInner.css">
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-logo-wrap">
+      <a href="Landing.html" class="nav-logo-link">
+        <img src="../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" class="nav-logo-fallback" style="display:none">
+          <span>🌱</span><span class="logo-text">UGAT</span>
+        </div>
+      </a>
+    </div>
+    <ul class="nav-links" role="list">
+      <li><a href="Landing.html"         class="nav-link">Home</a></li>
+      <li><a href="LandingAbout.html"    class="nav-link">About</a></li>
+      <li><a href="LandingFeatures.html" class="nav-link">Features</a></li>
+      <li><a href="LandingProducts.html" class="nav-link">Products</a></li>
+      <li><a href="LandingContact.html"  class="nav-link active">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav-cta" onclick="goToLogin()">Create Account &nbsp;→</button>
+    </div>
+  </nav>
+
+  <section class="inner-hero">
+    <div class="inner-hero-text">
+      <p class="hero-sub">GET IN TOUCH</p>
+      <h1 class="inner-title">Contact Us</h1>
+      <p class="inner-desc">Have questions about workshops, enrollment, or our farm products? Reach out and we'll get back to you.</p>
+    </div>
+  </section>
+
+  <main class="inner-content">
+
+    <div class="contact-layout">
+
+      <!-- Contact info -->
+      <div class="contact-info">
+        <h2>UGAT Integrated Farm</h2>
+
+        <div class="contact-item">
+          <span class="contact-icon">📍</span>
+          <div>
+            <strong>Address</strong>
+            <p>San Isidro, Daet, Camarines Norte, Region V, Philippines</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <span class="contact-icon">📞</span>
+          <div>
+            <strong>Phone</strong>
+            <p>+63 (054) XXX-XXXX</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <span class="contact-icon">📧</span>
+          <div>
+            <strong>Email</strong>
+            <p>info@ugatfarm.com</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <span class="contact-icon">🕐</span>
+          <div>
+            <strong>Office Hours</strong>
+            <p>Monday – Friday, 8:00 AM – 5:00 PM</p>
+          </div>
+        </div>
+
+        <!-- Quick link to login -->
+        <div class="contact-login-prompt">
+          <p>Already have an account?</p>
+          <button class="btn-nav-cta" onclick="goToLogin()">Login to TrainTrack →</button>
+        </div>
+      </div>
+
+      <!-- Inquiry form -->
+      <div class="contact-form-wrap">
+        <h2>Send an Inquiry</h2>
+        <div class="contact-form">
+
+          <div class="form-group">
+            <label for="c-name">Full Name *</label>
+            <input type="text" id="c-name" placeholder="Juan Dela Cruz" class="form-input">
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="c-email">Email Address *</label>
+              <input type="email" id="c-email" placeholder="juan@email.com" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="c-phone">Contact Number</label>
+              <input type="text" id="c-phone" placeholder="+63 9XX XXX XXXX" class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="c-subject">Subject *</label>
+            <select id="c-subject" class="form-input">
+              <option value="">Select a topic</option>
+              <option>Workshop Enrollment Inquiry</option>
+              <option>Farm Product Order</option>
+              <option>Certificate Request</option>
+              <option>General Question</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="c-message">Message *</label>
+            <textarea id="c-message" class="form-input contact-textarea"
+              placeholder="Type your message here..."></textarea>
+          </div>
+
+          <button class="btn-hero" style="width:100%;justify-content:center"
+            onclick="submitInquiry()">Send Message →</button>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="Landing.js"></script>
+  <script>
+    /**
+     * Handle the contact form submission.
+     * In production, POST the form data to a backend endpoint or email service.
+     */
+    function submitInquiry() {
+      const name    = document.getElementById('c-name').value.trim();
+      const email   = document.getElementById('c-email').value.trim();
+      const subject = document.getElementById('c-subject').value;
+      const message = document.getElementById('c-message').value.trim();
+
+      // Basic validation
+      if (!name || !email || !subject || !message) {
+        showToast('Please fill in all required fields.');
+        return;
+      }
+
+      // TODO: POST to backend / email service
+      showToast('Message sent! We will get back to you soon.');
+
+      // Reset form
+      document.getElementById('c-name').value    = '';
+      document.getElementById('c-email').value   = '';
+      document.getElementById('c-phone').value   = '';
+      document.getElementById('c-subject').value = '';
+      document.getElementById('c-message').value = '';
+    }
+  </script>
+</body>
+</html>

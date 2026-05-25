@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminProfile.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html" class="nav-link">Dashboard</a>
+      <a href="AdminWorkshops.html" class="nav-link">Programs</a>
+      <a href="AdminInventory.html" class="nav-link">Inventory</a>
+      <a href="#"                   class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user" id="nav-user-menu">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Maria Santos</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a  href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-content">
+
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">My Profile</h2>
+        <p class="page-sub">Manage your personal information and account credentials</p>
+      </div>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- ── LEFT: Avatar + role card ── -->
+      <div class="profile-sidebar">
+        <div class="profile-avatar-card">
+          <div class="profile-avatar-wrap">
+            <img id="profile-avatar-img" src="https://i.pravatar.cc/120?img=12" alt="Admin" class="profile-avatar-img">
+            <button class="profile-avatar-edit" onclick="document.getElementById('avatar-upload').click()" title="Change photo">✏️</button>
+            <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+          </div>
+          <h3 class="profile-name" id="display-name">Maria Santos</h3>
+          <span class="badge badge-issued" style="margin-top:0.25rem">System Administrator</span>
+          <p class="profile-email" id="display-email">admin@ugat.com</p>
+          <p class="profile-since">Member since January 2025</p>
+        </div>
+
+        <!-- Activity summary -->
+        <div class="profile-stats-card">
+          <h4 class="profile-stats-title">Activity Summary</h4>
+          <div class="profile-stat-row"><span>Trainees managed</span><strong>48</strong></div>
+          <div class="profile-stat-row"><span>Workshops created</span><strong>12</strong></div>
+          <div class="profile-stat-row"><span>Certificates issued</span><strong>11</strong></div>
+          <div class="profile-stat-row"><span>Attendance sessions</span><strong>24</strong></div>
+        </div>
+      </div>
+
+      <!-- ── RIGHT: Edit forms ── -->
+      <div class="profile-main">
+
+        <!-- Personal Information -->
+        <div class="profile-section">
+          <div class="profile-section-header">
+            <h3>Personal Information</h3>
+            <button class="btn-primary" onclick="savePersonalInfo()">Save Changes</button>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="p-firstname">First Name *</label>
+              <input type="text" id="p-firstname" class="form-input" value="Maria">
+            </div>
+            <div class="form-group">
+              <label for="p-lastname">Last Name *</label>
+              <input type="text" id="p-lastname" class="form-input" value="Santos">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="p-email">Email Address *</label>
+              <input type="email" id="p-email" class="form-input" value="admin@ugat.com">
+            </div>
+            <div class="form-group">
+              <label for="p-phone">Phone / Mobile</label>
+              <input type="text" id="p-phone" class="form-input" value="+63 917 000 0000">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="p-role">Role</label>
+              <input type="text" id="p-role" class="form-input" value="System Administrator" disabled style="opacity:0.6;cursor:not-allowed">
+            </div>
+            <div class="form-group">
+              <label for="p-department">Department / Position</label>
+              <input type="text" id="p-department" class="form-input" value="Farm Management Office">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="p-bio">Short Bio</label>
+            <textarea id="p-bio" class="form-input" rows="3" placeholder="Brief description about yourself…">Agricultural Extension Officer managing the UGAT TrainTrack system for the Camarines Norte farming community.</textarea>
+          </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="profile-section" style="margin-top:1.5rem">
+          <div class="profile-section-header">
+            <h3>Change Password</h3>
+            <button class="btn-secondary" onclick="savePassword()">Update Password</button>
+          </div>
+
+          <div class="form-group">
+            <label for="p-current-pw">Current Password *</label>
+            <div class="pw-input-wrap">
+              <input type="password" id="p-current-pw" class="form-input" placeholder="Enter current password">
+              <button class="pw-toggle" onclick="togglePw('p-current-pw',this)">👁</button>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="p-new-pw">New Password *</label>
+              <div class="pw-input-wrap">
+                <input type="password" id="p-new-pw" class="form-input" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)">
+                <button class="pw-toggle" onclick="togglePw('p-new-pw',this)">👁</button>
+              </div>
+              <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div>
+              <p id="pw-strength-label" class="light-txt" style="margin-top:0.2rem;font-size:var(--text-tiny)"></p>
+            </div>
+            <div class="form-group">
+              <label for="p-confirm-pw">Confirm New Password *</label>
+              <div class="pw-input-wrap">
+                <input type="password" id="p-confirm-pw" class="form-input" placeholder="Re-enter new password">
+                <button class="pw-toggle" onclick="togglePw('p-confirm-pw',this)">👁</button>
+              </div>
+            </div>
+          </div>
+          <div id="pw-error" class="error-msg" style="display:none"></div>
+        </div>
+
+        <!-- Login Activity -->
+        <div class="profile-section" style="margin-top:1.5rem">
+          <div class="profile-section-header">
+            <h3>Recent Login Activity</h3>
+          </div>
+          <div class="login-activity-list">
+            <div class="login-row">
+              <div class="login-icon login-current">✓</div>
+              <div class="login-info">
+                <div class="login-device">Chrome on Windows — <strong>Current session</strong></div>
+                <div class="login-meta">Daet, Camarines Norte · Today, 8:14 AM</div>
+              </div>
+              <span class="badge badge-issued">Active</span>
+            </div>
+            <div class="login-row">
+              <div class="login-icon">📱</div>
+              <div class="login-info">
+                <div class="login-device">Mobile Safari on iPhone</div>
+                <div class="login-meta">Daet, Camarines Norte · Yesterday, 6:45 PM</div>
+              </div>
+            </div>
+            <div class="login-row">
+              <div class="login-icon">💻</div>
+              <div class="login-info">
+                <div class="login-device">Chrome on Windows</div>
+                <div class="login-meta">Daet, Camarines Norte · May 10, 2026 · 9:02 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-main -->
+    </div><!-- /profile-layout -->
+
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="AdminProfile.js"></script>
+<script src="admin_nav_session.js"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

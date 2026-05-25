@@ -1,0 +1,44 @@
+[19-May-2026 05:12:34 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'w.date_start' in 'field list' in C:\IT\XAMPP\htdocs\ugat\pages\admin\approve_enrollment.php:39
+Stack trace:
+#0 C:\IT\XAMPP\htdocs\ugat\pages\admin\approve_enrollment.php(39): mysqli->prepare('SELECT e.user_i...')
+#1 {main}
+  thrown in C:\IT\XAMPP\htdocs\ugat\pages\admin\approve_enrollment.php on line 39
+[19-May-2026 05:28:04 Europe/Berlin] SMS Result: {"success":false,"sms":{"success":false,"message":"SMS not sent"},"email":{"success":false,"message":"Email not sent"},"channels_used":[]}
+[19-May-2026 05:32:34 Europe/Berlin] SMS Result: {"success":false,"message":"User phone number not configured"}
+[19-May-2026 05:33:34 Europe/Berlin] SMS DEBUG: To=+639282642447, Message=Hi John Manuel Gumabao, you have been enrolled in workshop: Fast-Track Organic Pechay Growing on . https://ugat.local/pages/trainee/TraineeWorkshops.html
+[19-May-2026 05:33:34 Europe/Berlin] SMS Result: {"success":true,"message":"SMS sent successfully.","sms_id":"test_6a0bda0e387d6"}
+[19-May-2026 05:34:22 Europe/Berlin] UniSMS HTTP Code: 422
+[19-May-2026 05:34:22 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[19-May-2026 05:34:22 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[19-May-2026 05:38:23 Europe/Berlin] UniSMS HTTP Code: 422
+[19-May-2026 05:38:23 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[19-May-2026 05:38:23 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[19-May-2026 05:56:30 Europe/Berlin] UniSMS HTTP Code: 422
+[19-May-2026 05:56:30 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[19-May-2026 05:56:30 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 04:37:09 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 04:37:09 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 04:37:09 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 04:51:20 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 04:51:20 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 04:51:20 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 06:49:24 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 06:49:24 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 06:49:24 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 10:25:44 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 10:25:44 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 10:25:44 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 10:32:13 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 10:32:13 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 10:32:13 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 11:11:49 Europe/Berlin] UniSMS HTTP Code: 422
+[22-May-2026 11:11:49 Europe/Berlin] UniSMS Response: {"errors":{"content":["Links are prohibited according to NTC Memorandum Order No. 006-09-2022"]}}
+[22-May-2026 11:11:49 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 422 \u2014 {\"errors\":{\"content\":[\"Links are prohibited according to NTC Memorandum Order No. 006-09-2022\"]}}","sms_id":null}
+[22-May-2026 11:32:25 Europe/Berlin] UniSMS HTTP Code: 201
+[22-May-2026 11:32:25 Europe/Berlin] UniSMS Response: {"message":{"status":"pending","metadata":{},"content":"Hi Caspian Reinhart, your enrollment in Climate-Resilient Farming Workshop has been approved. Check the UGAT app for details.","created":"2026-05-22T09:32:26Z","sender_id":"Unisoft","reference_id":"msg_7e7d0ff2-1b9c-4724-b1cd-0d109a9e3fa3","recipient":"+639364538147","fail_reason":null}}
+[22-May-2026 11:32:25 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 201 \u2014 {\"message\":{\"status\":\"pending\",\"metadata\":{},\"content\":\"Hi Caspian Reinhart, your enrollment in Climate-Resilient Farming Workshop has been approved. Check the UGAT app for details.\",\"created\":\"2026-05-22T09:32:26Z\",\"sender_id\":\"Unisoft\",\"reference_id\":\"msg_7e7d0ff2-1b9c-4724-b1cd-0d109a9e3fa3\",\"recipient\":\"+639364538147\",\"fail_reason\":null}}","sms_id":null}
+[22-May-2026 11:32:28 Europe/Berlin] Notification Error: The number of variables must match the number of parameters in the prepared statement
+[25-May-2026 00:47:57 Europe/Berlin] UniSMS HTTP Code: 201
+[25-May-2026 00:47:57 Europe/Berlin] UniSMS Response: {"message":{"status":"pending","metadata":{},"content":"Hi Irene Mae Sacayan, your enrollment in Tree Planting has been approved. Check the UGAT app for details.","created":"2026-05-24T22:47:57Z","sender_id":"Unisoft","reference_id":"msg_c3525828-b2c0-44ca-a5f3-d60ec810b249","recipient":"+639282642447","fail_reason":null}}
+[25-May-2026 00:47:57 Europe/Berlin] SMS Result: {"success":false,"message":"UniSMS HTTP 201 \u2014 {\"message\":{\"status\":\"pending\",\"metadata\":{},\"content\":\"Hi Irene Mae Sacayan, your enrollment in Tree Planting has been approved. Check the UGAT app for details.\",\"created\":\"2026-05-24T22:47:57Z\",\"sender_id\":\"Unisoft\",\"reference_id\":\"msg_c3525828-b2c0-44ca-a5f3-d60ec810b249\",\"recipient\":\"+639282642447\",\"fail_reason\":null}}","sms_id":null}
+[25-May-2026 00:48:02 Europe/Berlin] Notification Error: The number of variables must match the number of parameters in the prepared statement

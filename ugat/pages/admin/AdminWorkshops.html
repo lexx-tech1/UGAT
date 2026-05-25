@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<!--
+  AdminWorkshops.html — UGAT TrainTrack
+  Unified Program Management hub with 4 inner tabs:
+    1. Workshops     — cards, add/edit workshop modals
+    2. Trainees      — full trainee table with CRUD
+    3. Attendance    — by-trainee / by-workshop / by-session views
+    4. Certifications — eligible + issued tables, issue & view modals
+
+  All four sections live in this one file.
+  The nav links for Trainees, Attendance, and Certifications redirect here.
+
+  Linked files:
+    Styles  : ../css/styles.css       (shared design system)
+    Styles  : AdminWorkshops.css      (all tab + modal styles)
+    Scripts : AdminWorkshops.js       (all four tab data + logic)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Program Management — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminWorkshops.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== ADMIN NAV ===== -->
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html"  class="nav-link">Dashboard</a>
+      <a href="AdminWorkshops.html"  class="nav-link active">Programs</a>
+      <a href="AdminInventory.html"  class="nav-link">Inventory</a>
+      <a href="AdminReports.html"   class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)" id="user-trigger">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Maria Santos</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a  href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="app-content">
+
+    <!-- Page header — actions injected per tab by JS -->
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Program Management</h2>
+        <p class="page-sub" id="pm-sub">Workshops, trainees, attendance &amp; certifications — all in one place</p>
+      </div>
+      <div class="header-btns" id="pm-header-actions"></div>
+    </div>
+
+    <!-- ── INNER TAB BAR ── -->
+    <div class="pm-tab-bar">
+      <button class="pm-tab active" data-tab="workshops"       onclick="switchPMTab('workshops',       this)">Workshops</button>
+      <button class="pm-tab"        data-tab="trainees"        onclick="switchPMTab('trainees',        this)">Trainees</button>
+      <button class="pm-tab"        data-tab="attendance"      onclick="switchPMTab('attendance',      this)">Attendance</button>
+      <button class="pm-tab"        data-tab="certifications"  onclick="switchPMTab('certifications',  this)">Certifications</button>
+    </div>
+
+    <!-- alert banner (shared) -->
+    <div id="pm-alert" class="sms-info-box" style="display:none"></div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 1 — WORKSHOPS
+         ══════════════════════════════════════════════════ -->
+    <div id="tab-workshops" class="pm-tab-content">
+
+      <!-- KPI cards — numbers updated by JS from DB -->
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-num" id="ws-stat-total">—</div><div class="stat-label">Total Workshops</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="ws-stat-upcoming">—</div><div class="stat-label">Upcoming</div><div class="stat-sub">Scheduled</div></div>
+        <div class="stat-card"><div class="stat-num" id="ws-stat-ongoing">—</div><div class="stat-label">Ongoing</div><div class="stat-sub">In progress</div></div>
+        <div class="stat-card"><div class="stat-num" id="ws-stat-completed">—</div><div class="stat-label">Completed</div><div class="stat-sub">All sessions done</div></div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="filterWorkshops('all',       this)">All</button>
+        <button class="tab-btn"        onclick="filterWorkshops('upcoming',  this)">Upcoming</button>
+        <button class="tab-btn"        onclick="filterWorkshops('ongoing',   this)">Ongoing</button>
+        <button class="tab-btn"        onclick="filterWorkshops('completed', this)">Completed</button>
+      </div>
+
+      <div id="ws-sections">
+        <!-- Upcoming -->
+        <h3 class="section-title" id="wshop-upcoming-hdr">Upcoming Workshops</h3>
+        <div class="wshop-grid" id="wshop-upcoming"><!-- cards injected --></div>
+        <!-- Ongoing -->
+        <h3 class="section-title" id="wshop-ongoing-hdr">Ongoing Workshops</h3>
+        <div class="wshop-grid" id="wshop-ongoing"><!-- cards injected --></div>
+        <!-- Completed -->
+        <h3 class="section-title" id="wshop-completed-hdr" style="display:none">Completed Workshops</h3>
+        <div class="wshop-grid" id="wshop-completed" style="display:none"><!-- cards injected --></div>
+      </div>
+
+    </div><!-- /tab-workshops -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 2 — TRAINEES
+         ══════════════════════════════════════════════════ -->
+    <div id="tab-trainees" class="pm-tab-content" style="display:none">
+
+        <div id="pending-enrollment-banner" style="display:none;align-items:center;gap:1rem;
+       background:#fffbeb;border:1.5px solid #f59e0b;border-radius:10px;
+       padding:0.85rem 1.25rem;margin-bottom:1rem">
+    <span style="font-size:1.25rem">⏳</span>
+    <div>
+      <strong style="color:#92400e">
+        <span id="pending-banner-count">0</span> pending enrollment(s) awaiting review
+      </strong>
+      <p style="font-size:0.8rem;color:#b45309;margin:0">
+        Click "View Form" on highlighted rows to review and approve or reject.
+      </p>
+    </div>
+  </div>
+
+      <!-- KPI cards — ALL four IDs present so JS can update every number -->
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-num" id="tr-stat-total">—</div><div class="stat-label">Total Trainees</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="tr-stat-active">—</div><div class="stat-label">Active</div><div class="stat-sub">Currently enrolled</div></div>
+        <div class="stat-card"><div class="stat-num" id="tr-stat-certified">—</div><div class="stat-label">Certified</div><div class="stat-sub">Certificate issued</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="tr-stat-pending">—</div><div class="stat-label">Pending</div><div class="stat-sub">Awaiting approval</div></div>
+      </div>
+
+      <div class="table-filters">
+        <input type="text" id="tr-search" placeholder="Search trainees…" class="search-input" oninput="filterTrainees()">
+        <select class="filter-select" id="tr-filter-status" onchange="filterTrainees()">
+          <option value="">All Status</option>
+          <option value="enrolled">Enrolled</option>
+          <option value="certified">Certified</option>
+          <option value="pending">Pending</option>
+        </select>
+        <!-- Workshop options injected by JS — no hardcoded values -->
+        <select class="filter-select" id="tr-filter-workshop" onchange="filterTrainees()">
+          <option value="">All Workshops</option>
+        </select>
+        <select class="filter-select" id="tr-sort" onchange="filterTrainees()">
+          <option value="newest">Sort: Newest</option>
+          <option value="name">Sort: Name A–Z</option>
+        </select>
+      </div>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Trainee</th><th>Contact</th><th>Workshop</th><th>Attendance</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="trainees-tbody"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /tab-trainees -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 3 — ATTENDANCE
+         ══════════════════════════════════════════════════ -->
+    <div id="tab-attendance" class="pm-tab-content" style="display:none">
+
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-num" id="att-stat-total">—</div><div class="stat-label">Total Records</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card highlight"><div class="stat-num" id="att-stat-present">—</div><div class="stat-label">Present</div><div class="stat-sub" id="att-stat-pct">—</div></div>
+        <div class="stat-card red"><div class="stat-num" id="att-stat-absent">—</div><div class="stat-label">Absent</div><div class="stat-sub">Sessions</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="att-stat-late">—</div><div class="stat-label">Late</div><div class="stat-sub">Sessions</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="table-filters">
+        <input type="text" id="att-search" placeholder="Search trainee or workshop…" class="search-input" oninput="applyAttFilters()">
+        <select class="filter-select" id="att-filter-status" onchange="applyAttFilters()">
+          <option value="">All Status</option>
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Incomplete">Incomplete</option>
+        </select>
+        <!-- Workshop options injected by JS — no hardcoded values -->
+        <select class="filter-select" id="att-filter-workshop" onchange="applyAttFilters()">
+          <option value="">All Workshops</option>
+        </select>
+        <select class="filter-select" id="att-sort" onchange="applyAttFilters()">
+          <option value="newest">Sort: Newest</option>
+          <option value="name">Sort: Name A–Z</option>
+          <option value="rate-desc">Rate: High → Low</option>
+          <option value="rate-asc">Rate: Low → High</option>
+        </select>
+      </div>
+
+      <!-- View mode tabs + date filters -->
+      <div class="table-filters" style="margin-top:-0.25rem">
+        <div class="filter-btns">
+          <button class="tab-btn active" onclick="switchAttView('trainee',  this)">By Trainee</button>
+          <button class="tab-btn"        onclick="switchAttView('workshop', this)">By Workshop</button>
+          <button class="tab-btn"        onclick="switchAttView('session',  this)">By Session</button>
+        </div>
+        <button class="tab-btn" id="att-date-today"     onclick="filterAttByDate('today',     this)">Today</button>
+        <button class="tab-btn" id="att-date-yesterday" onclick="filterAttByDate('yesterday', this)">Yesterday</button>
+        <button class="tab-btn active" id="att-date-all" onclick="filterAttByDate('all',      this)">All Dates</button>
+      </div>
+
+      <div class="table-header-row">
+        <h3 id="att-view-heading">All trainee attendance records</h3>
+        <button class="btn-secondary" onclick="openModal('att-export-modal')">Export Report</button>
+      </div>
+
+      <p class="legend-txt">
+        <span class="dot-P" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">P</span> Present &nbsp;·&nbsp;
+        <span class="dot-A" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">A</span> Absent &nbsp;·&nbsp;
+        <span class="dot-L" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">L</span> Late &nbsp;·&nbsp;
+        <span class="dot-dash" style="display:inline-flex;width:20px;height:20px;font-size:0.65rem">–</span> Upcoming
+      </p>
+
+      <!-- By Trainee view -->
+      <div id="att-view-trainee" class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Trainee</th><th>Workshop</th><th>Sessions</th><th>Progress</th><th>Rate</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="att-trainee-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- By Workshop view -->
+      <div id="att-view-workshop" class="data-table-wrap" style="display:none">
+        <table class="data-table">
+          <thead><tr><th>Workshop</th><th>Sessions</th><th>Enrolled</th><th>Avg. Rate</th><th>Present</th><th>Absent</th><th>Late</th></tr></thead>
+          <tbody id="att-workshop-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- By Session view -->
+      <div id="att-view-session" class="data-table-wrap" style="display:none">
+        <table class="data-table">
+          <thead><tr><th>Workshop</th><th>Session</th><th>Date</th><th>Present</th><th>Absent</th><th>Late</th><th>Rate</th></tr></thead>
+          <tbody id="att-session-tbody"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /tab-attendance -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         TAB 4 — CERTIFICATIONS
+         ══════════════════════════════════════════════════ -->
+    <div id="tab-certifications" class="pm-tab-content" style="display:none">
+
+      <!-- KPI cards — ALL four IDs present so JS can update every number -->
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-num" id="cert-stat-issued">—</div><div class="stat-label">Total Issued</div><div class="stat-sub">All time</div></div>
+        <div class="stat-card yellow"><div class="stat-num" id="cert-stat-eligible">—</div><div class="stat-label">Eligible</div><div class="stat-sub">● Action needed</div></div>
+        <div class="stat-card"><div class="stat-num" id="cert-stat-inprogress">—</div><div class="stat-label">In Progress</div><div class="stat-sub">Sessions incomplete</div></div>
+        <div class="stat-card red"><div class="stat-num" id="cert-stat-inactive">—</div><div class="stat-label">Inactive</div><div class="stat-sub">Not eligible</div></div>
+      </div>
+
+      <div class="sms-info-box">
+        📱 Issuing a certificate automatically sends an SMS via <strong>Semaphore API</strong>. Verify the contact number before issuing.
+      </div>
+
+      <!-- Eligible -->
+      <h3 class="section-title">Eligible — action needed</h3>
+      <div class="table-header-row">
+        <h4>Trainees ready for certification</h4>
+        <span class="action-needed-txt" id="cert-eligible-count">0 awaiting issuance</span>
+      </div>
+      <div class="table-filters" style="margin-bottom:0.75rem">
+        <input type="text" id="cert-elig-search" placeholder="Search…" class="search-input" oninput="filterEligible()">
+        <select class="filter-select" id="cert-elig-rate" onchange="filterEligible()">
+          <option value="">All Rates</option>
+          <option value="100">100%</option>
+          <option value="75">75%+</option>
+          <option value="50">50%+</option>
+        </select>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Trainee</th><th>Workshop</th><th>Sessions</th><th>Rate</th><th>Completed</th><th>Action</th></tr></thead>
+          <tbody id="cert-eligible-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Issued -->
+      <h3 class="section-title" style="margin-top:2rem">Already issued</h3>
+      <div class="table-header-row">
+        <h4>Issued certificates</h4>
+        <button class="btn-secondary" onclick="openModal('cert-export-modal')">Export All</button>
+      </div>
+      <div class="table-filters" style="margin-bottom:0.75rem">
+        <input type="text" id="cert-issued-search" placeholder="Search…" class="search-input" oninput="filterIssued()">
+        <!-- Workshop options injected by JS — no hardcoded values -->
+        <select class="filter-select" id="cert-issued-workshop" onchange="filterIssued()">
+          <option value="">All Workshops</option>
+        </select>
+        <select class="filter-select" id="cert-issued-sort" onchange="filterIssued()">
+          <option value="newest">Sort: Newest</option>
+          <option value="oldest">Sort: Oldest</option>
+          <option value="name">Sort: Name A–Z</option>
+        </select>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Trainee</th><th>Workshop</th><th>Certificate No.</th><th>Issued On</th><th>SMS</th><th>Actions</th></tr></thead>
+          <tbody id="cert-issued-tbody"></tbody>
+        </table>
+      </div>
+      <p class="light-txt" id="cert-issued-count" style="padding:0.75rem 0">Showing 0 certificates</p>
+
+    </div><!-- /tab-certifications -->
+
+  </main>
+</div><!-- /app-layout -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALS — WORKSHOPS TAB
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- Attendance Modal (workshop cards) -->
+<div id="ws-attendance-modal" class="modal-overlay" onclick="closeModalOutside(event,'ws-attendance-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3 id="ws-att-title">Attendance Sheet</h3><p class="modal-sub" id="ws-att-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('ws-attendance-modal')">✕</button>
+    </div>
+    <div class="attendance-summary">
+      <span class="att-stat present-stat">Present: <span id="ws-att-present">0</span></span>
+      <span class="att-stat late-stat">Late: <span id="ws-att-late">0</span></span>
+      <span class="att-stat absent-stat">Absent: <span id="ws-att-absent">0</span></span>
+      <button class="btn-primary" style="margin-left:auto" onclick="saveWSAttendance()">Save</button>
+    </div>
+    <div class="att-table-wrap">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Trainee</th><th>Contact</th><th>Previous</th><th>Mark</th></tr></thead>
+        <tbody id="ws-att-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add New Workshop (3-step) -->
+<div id="add-workshop-modal" class="modal-overlay" onclick="closeModalOutside(event,'add-workshop-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3>Add New Workshop</h3><p class="modal-sub">All fields marked * are required</p></div>
+      <button class="modal-close" onclick="closeModal('add-workshop-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="aw-steps">
+        <div class="aw-step active" id="aw-step-dot-1"><span>1</span><small>Basic Info</small></div>
+        <div class="aw-step-line"></div>
+        <div class="aw-step" id="aw-step-dot-2"><span>2</span><small>Schedule</small></div>
+        <div class="aw-step-line"></div>
+        <div class="aw-step" id="aw-step-dot-3"><span>3</span><small>Details</small></div>
+      </div>
+      <!-- Step 1 -->
+      <div id="aw-page-1">
+        <div class="form-row-2">
+          <div class="form-group"><label for="aw-title">Title *</label><input type="text" id="aw-title" class="form-input" placeholder="e.g. Organic Urban Gardening"></div>
+          <div class="form-group"><label for="aw-category">Category *</label>
+            <select id="aw-category" class="form-input"><option value="">Select</option><option>Urban Farming</option><option>Specialty Farming</option><option>Tech Farming</option><option>Crop Growing</option><option>Sustainable</option><option>Livestock</option><option>Aquaculture</option></select>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label for="aw-facilitator">Facilitator *</label><input type="text" id="aw-facilitator" class="form-input" placeholder="e.g. Maria Cruz"></div>
+          <div class="form-group"><label for="aw-location">Location *</label><input type="text" id="aw-location" class="form-input" value="UGAT Demo Farm, San Isidro, Daet, Camarines Norte"></div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label for="aw-max-slots">Max Slots *</label><input type="number" id="aw-max-slots" class="form-input" min="1" placeholder="25"></div>
+          <div class="form-group"><label for="aw-status">Status *</label><select id="aw-status" class="form-input"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option></select></div>
+        </div>
+        <div id="aw-error-1" class="error-msg" style="display:none"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+          <button class="btn-primary" onclick="awGoStep(2)">Next: Schedule →</button>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div id="aw-page-2" style="display:none">
+        <p style="font-size:var(--text-body-sm);color:var(--color-text-mid);margin-bottom:1rem">Add up to 5 sessions. Each needs a title, date, and time.</p>
+        <div id="aw-sessions-list"></div>
+        <button class="btn-outline" onclick="addSessionRow()" style="margin-bottom:1rem;width:100%">+ Add Session</button>
+        <div class="form-group"><label for="aw-cert-req">Certification Requirement *</label><input type="text" id="aw-cert-req" class="form-input" placeholder="e.g. Must attend all sessions"></div>
+        <div id="aw-error-2" class="error-msg" style="display:none"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+          <button class="btn-outline" onclick="awGoStep(1)">← Back</button>
+          <button class="btn-primary" onclick="awGoStep(3)">Next: Details →</button>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div id="aw-page-3" style="display:none">
+        <div class="form-group"><label for="aw-description">Description *</label><textarea id="aw-description" class="form-input" rows="4" placeholder="Describe what trainees will learn…"></textarea></div>
+        <div class="form-group"><label for="aw-outcomes">Learning Outcomes * <span style="font-weight:400;color:var(--color-text-mid)">(one per line)</span></label><textarea id="aw-outcomes" class="form-input" rows="4" placeholder="Understand organic soil preparation&#10;Grow 5 vegetables&#10;Apply pest management"></textarea></div>
+        <div class="form-group"><label for="aw-materials">Required Materials <span style="font-weight:400;color:var(--color-text-mid)">(one per line)</span></label><textarea id="aw-materials" class="form-input" rows="3" placeholder="Seedling starter kit (provided)&#10;Gardening gloves"></textarea></div>
+        <div id="aw-error-3" class="error-msg" style="display:none"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+          <button class="btn-outline" onclick="awGoStep(2)">← Back</button>
+          <button class="btn-primary" onclick="submitNewWorkshop()">✓ Add Workshop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Workshops list -->
+<div id="edit-workshops-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-workshops-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3>Edit Workshops</h3><p class="modal-sub">Select a workshop to edit</p></div>
+      <button class="modal-close" onclick="closeModal('edit-workshops-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Workshop</th><th>Category</th><th>Date</th><th>Slots</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="edit-workshops-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Single Workshop -->
+<div id="edit-single-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-single-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3 id="edit-single-title">Edit Workshop</h3><p class="modal-sub">Update workshop details</p></div>
+      <button class="modal-close" onclick="closeModal('edit-single-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group"><label for="es-title">Title *</label><input type="text" id="es-title" class="form-input"></div>
+        <div class="form-group"><label for="es-category">Category *</label><select id="es-category" class="form-input"><option>Urban Farming</option><option>Specialty Farming</option><option>Tech Farming</option><option>Crop Growing</option><option>Sustainable</option><option>Livestock</option><option>Aquaculture</option></select></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="es-facilitator">Facilitator *</label><input type="text" id="es-facilitator" class="form-input"></div>
+        <div class="form-group"><label for="es-location">Location *</label><input type="text" id="es-location" class="form-input"></div>
+      </div>
+      <div class="form-group">
+        <label for="es-slots">Max Slots *</label>
+        <input type="number" id="es-slots" class="form-input" min="1" style="max-width:180px">
+      </div>
+      <div class="form-group"><label for="es-description">Description</label><textarea id="es-description" class="form-input" rows="3"></textarea></div>
+      <div class="form-group" style="margin-top:0.75rem">
+        <label style="font-weight:700;font-size:var(--text-body-sm)">Sessions <span style="font-size:var(--text-tiny);color:#888;font-weight:400">(changing dates updates status automatically)</span></label>
+        <div id="es-sessions-list" style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.5rem">
+          <p style="color:#aaa;font-size:var(--text-caption)">Loading sessions…</p>
+        </div>
+      </div>
+      <input type="hidden" id="es-index">
+      <div style="display:flex;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-single-modal');openModal('edit-workshops-modal')">← Back</button>
+        <button class="btn-primary" onclick="saveEditedWorkshop()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     REPLACE the entire #add-trainee-modal in AdminWorkshops.html
+     with this block.
+     
+     Changes vs. original:
+       • "Complete Address *" single input → 4 cascading selects
+         (Region → Province → City/Municipality → Barangay)
+         + a House/Street free-text input below
+       • Hidden #nt-address field assembles the full address string
+         (used by submitNewTrainee() in AdminWorkshops.js — no JS change needed)
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="add-trainee-modal" class="modal-overlay" onclick="closeModalOutside(event,'add-trainee-modal')">
+  <div class="modal-box" style="max-width:560px">
+
+    <div class="modal-header">
+      <div>
+        <h3>Add New Trainee</h3>
+        <p class="modal-sub">Fill in details and assign workshops</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('add-trainee-modal')">✕</button>
+    </div>
+
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;max-height:75vh;overflow-y:auto">
+
+      <!-- ── Name row ───────────────────────────────────────── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem">
+        <div class="form-group" style="margin:0">
+          <label>Last Name *</label>
+          <input type="text" id="nt-lastname" class="form-input" placeholder="Dela Cruz">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>First Name *</label>
+          <input type="text" id="nt-firstname" class="form-input" placeholder="Juan">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Middle Name</label>
+          <input type="text" id="nt-middlename" class="form-input" placeholder="Santos">
+        </div>
+      </div>
+
+      <!-- ── Contact + Email ───────────────────────────────── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+        <div class="form-group" style="margin:0">
+          <label>Contact Number *</label>
+<input type="text" id="nt-contact" class="form-input"
+       placeholder="+63 9XX XXX XXXX" maxlength="14">
+          <p class="light-txt" style="margin-top:0.25rem;font-size:0.75rem">
+            Temp password will be sent here via SMS
+          </p>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Email *</label>
+          <input type="email" id="nt-email" class="form-input" placeholder="juan@email.com">
+        </div>
+      </div>
+
+      <!-- ── Address — cascading dropdowns ────────────────── -->
+      <div style="display:flex;flex-direction:column;gap:0.6rem">
+
+        <label style="font-size:0.85rem;font-weight:600;color:var(--color-text)">
+          Complete Address *
+        </label>
+
+        <!-- Row 1: Region + Province -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.75rem;color:var(--color-text-mid);font-weight:500">Region</label>
+            <select id="nt-region" class="form-input addr-select"
+                    onchange="onNTRegionChange()" style="color:#555">
+              <option value="">Select region…</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.75rem;color:var(--color-text-mid);font-weight:500">Province</label>
+            <select id="nt-province" class="form-input addr-select"
+                    onchange="onNTProvinceChange()" disabled
+                    style="color:#555;opacity:0.55;cursor:not-allowed">
+              <option value="">Select province…</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2: City/Municipality + Barangay -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.75rem;color:var(--color-text-mid);font-weight:500">City / Municipality</label>
+            <select id="nt-city" class="form-input addr-select"
+                    onchange="onNTCityChange()" disabled
+                    style="color:#555;opacity:0.55;cursor:not-allowed">
+              <option value="">Select city…</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label style="font-size:0.75rem;color:var(--color-text-mid);font-weight:500">Barangay</label>
+            <select id="nt-barangay" class="form-input addr-select"
+                    onchange="onNTBarangayChange()" disabled
+                    style="color:#555;opacity:0.55;cursor:not-allowed">
+              <option value="">Select barangay…</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- House no. + Street (free text) -->
+        <div class="form-group" style="margin:0">
+          <label style="font-size:0.75rem;color:var(--color-text-mid);font-weight:500">
+            House No. &amp; Street <span style="font-weight:400">(optional)</span>
+          </label>
+          <input type="text" id="nt-street" class="form-input"
+                 placeholder="e.g. 12 Rizal St."
+                 oninput="buildNTAddress()">
+        </div>
+
+        <!-- Hidden field that assembles the full address string
+             — submitNewTrainee() reads #nt-address, no change needed there -->
+        <input type="hidden" id="nt-address">
+
+      </div><!-- /address block -->
+
+      <!-- ── Workshop dropdown ─────────────────────────────── -->
+      <div class="form-group" style="margin:0;position:relative">
+        <label>Workshops * <span class="light-txt">(select one or more)</span></label>
+
+        <!-- Trigger button -->
+        <div id="nt-ws-trigger" class="form-input" onclick="toggleWSDropdown()"
+             style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;min-height:42px">
+          <span id="nt-ws-trigger-text" style="color:#aaa">Select workshops…</span>
+          <span id="nt-ws-arrow" style="font-size:0.7rem;transition:transform 0.2s">▼</span>
+        </div>
+
+        <!-- Dropdown list -->
+        <div id="nt-workshop-list"
+             style="display:none;position:absolute;z-index:999;left:0;right:0;
+                    background:#fff;border:1.5px solid var(--color-border);
+                    border-top:none;border-radius:0 0 8px 8px;
+                    max-height:200px;overflow-y:auto;
+                    box-shadow:0 8px 24px rgba(0,0,0,0.1)">
+          <p style="color:#aaa;font-size:0.85rem;padding:0.75rem 1rem">Loading workshops…</p>
+        </div>
+      </div>
+
+      <!-- Selected workshops tags -->
+      <div id="nt-ws-tags" style="display:flex;flex-wrap:wrap;gap:0.4rem;min-height:0"></div>
+
+      <!-- ── Enrollment Status (fixed) ─────────────────────── -->
+      <div class="form-group" style="margin:0">
+        <label>Enrollment Status</label>
+        <div class="form-input" style="background:#f5f9f2;color:#4B8423;font-weight:600;
+                                       display:flex;align-items:center;gap:0.5rem;cursor:default">
+          <span style="width:8px;height:8px;border-radius:50%;background:#4B8423;display:inline-block"></span>
+          Enrolled
+        </div>
+      </div>
+
+      <!-- ── SMS info ───────────────────────────────────────── -->
+      <div class="settings-info-box" style="font-size:0.82rem;padding:0.75rem 1rem">
+        🔑 A <strong>temporary password</strong> will be automatically generated and sent via SMS
+        to the trainee's contact number. They can use it to log in and should change it after first login.
+        <br><br>
+        ⚠️ If SMS fails (invalid number, unreachable, or no API key), the temp password will be shown
+        on screen so you can share it manually.
+      </div>
+
+      <!-- ── Error ──────────────────────────────────────────── -->
+      <div id="add-trainee-error" class="error-msg" style="display:none"></div>
+
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.5rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('add-trainee-modal')">Cancel</button>
+        <button class="btn-primary" id="nt-submit-btn" onclick="submitNewTrainee()">Add Trainee</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Edit Trainee -->
+<div id="edit-trainee-modal" class="modal-overlay" onclick="closeModalOutside(event,'edit-trainee-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3>Edit Trainee</h3><p class="modal-sub">Update the trainee's information</p></div>
+      <button class="modal-close" onclick="closeModal('edit-trainee-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group"><label for="et-name">Full Name *</label><input type="text" id="et-name" class="form-input"></div>
+        <div class="form-group"><label for="et-email">Email *</label><input type="email" id="et-email" class="form-input"></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="et-contact">Contact *</label><input type="text" id="et-contact" class="form-input"></div>
+        <div class="form-group"><label for="et-address">Address *</label><input type="text" id="et-address" class="form-input"></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label for="et-workshop">Workshop</label>
+          <!-- Options injected by JS — no hardcoded values -->
+          <select id="et-workshop" class="form-input"><option value="">Select workshop</option></select>
+        </div>
+        <div class="form-group"><label for="et-status">Status</label>
+          <select id="et-status" class="form-input"><option value="enrolled">Enrolled</option><option value="pending">Pending</option><option value="certified">Certified</option></select>
+        </div>
+      </div>
+      <input type="hidden" id="et-row-index">
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-trainee-modal')">Cancel</button>
+        <button class="btn-primary"  onclick="saveEditTrainee()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Trainee -->
+<div id="delete-trainee-modal" class="modal-overlay" onclick="closeModalOutside(event,'delete-trainee-modal')">
+  <div class="modal-box" style="max-width:420px;text-align:center;padding:2rem">
+    <div style="font-size:2.5rem;margin-bottom:1rem">🗑️</div>
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Delete Trainee?</h3>
+    <p id="delete-trainee-msg" style="font-size:0.85rem;color:#666;margin-bottom:1.5rem">This cannot be undone.</p>
+    <input type="hidden" id="delete-trainee-idx">
+    <div style="display:flex;justify-content:center;gap:0.75rem">
+      <button class="btn-outline" onclick="closeModal('delete-trainee-modal')">Cancel</button>
+      <button class="btn-primary" style="background:#e74c3c" onclick="confirmDeleteTrainee()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALS — ATTENDANCE TAB
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- Attendance detail view modal -->
+<div id="att-detail-modal" class="modal-overlay" onclick="closeModalOutside(event,'att-detail-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div><h3 id="att-detail-title">Attendance Detail</h3><p class="modal-sub" id="att-detail-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('att-detail-modal')">✕</button>
+    </div>
+    <div class="att-detail-summary" id="att-detail-summary"></div>
+    <div class="att-table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Session</th><th>Date</th><th>Status</th><th>Notes</th><th>Edit</th></tr></thead>
+        <tbody id="att-detail-tbody"></tbody>
+      </table>
+    </div>
+    <div style="padding:1rem 1.5rem;display:flex;justify-content:flex-end;gap:0.75rem;border-top:1px solid var(--color-border)">
+      <button class="btn-outline" onclick="closeModal('att-detail-modal')">Close</button>
+      <button class="btn-primary" onclick="saveAttendanceEdits()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Export Modal -->
+<div id="att-export-modal" class="modal-overlay" onclick="closeModalOutside(event,'att-export-modal')">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-header">
+      <div><h3>Export Attendance Report</h3><p class="modal-sub">Choose scope and format</p></div>
+      <button class="modal-close" onclick="closeModal('att-export-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+      <div class="form-group"><label for="att-exp-scope">Scope</label>
+        <select id="att-exp-scope" class="form-input"><option value="all">All trainees, all workshops</option><option value="workshop">Specific workshop</option><option value="trainee">Specific trainee</option></select>
+      </div>
+      <div class="form-group"><label for="att-exp-format">Format</label>
+        <select id="att-exp-format" class="form-input"><option value="csv">CSV (Excel)</option><option value="pdf">PDF summary</option></select>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group" style="margin:0"><label for="att-exp-from">From</label><input type="date" id="att-exp-from" class="form-input"></div>
+        <div class="form-group" style="margin:0"><label for="att-exp-to">To</label><input type="date" id="att-exp-to" class="form-input"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.5rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('att-export-modal')">Cancel</button>
+        <button class="btn-primary" onclick="doAttExport()">Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALS — CERTIFICATIONS TAB
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- Issue Certificate Confirmation -->
+<div id="cert-issue-modal" class="modal-overlay" onclick="closeModalOutside(event,'cert-issue-modal')">
+  <div class="modal-box" style="max-width:500px">
+    <div class="modal-header">
+      <div><h3>Confirm Certificate Issuance</h3><p class="modal-sub">Review before issuing</p></div>
+      <button class="modal-close" onclick="closeModal('cert-issue-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+      <div class="cert-confirm-card" id="cert-confirm-details"></div>
+      <div class="sms-preview" id="cert-sms-preview"></div>
+      <div class="form-group" style="margin:0">
+        <label for="cert-confirm-contact">Contact Number</label>
+        <input type="text" id="cert-confirm-contact" class="form-input" placeholder="+63 9XX XXX XXXX">
+        <p class="light-txt" style="margin-top:0.3rem">SMS sent via Semaphore.</p>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.75rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('cert-issue-modal')">Cancel</button>
+        <button class="btn-primary" onclick="confirmIssuance()">✓ Issue &amp; Send SMS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Certificate -->
+<div id="cert-view-modal" class="modal-overlay" onclick="closeModalOutside(event,'cert-view-modal')">
+  <div class="modal-box" style="max-width:820px">
+    <div class="modal-header">
+      <div><h3>Certificate Preview</h3><p class="modal-sub" id="cert-view-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('cert-view-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <div class="cert-preview-card" id="cert-preview-body"></div>
+      <table class="cert-detail-table" id="cert-detail-table"></table>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="resendCertSMS()">📱 Resend SMS</button>
+        <button class="btn-outline" onclick="downloadCertificate('png')">🖼 Save as Image</button>
+        <button class="btn-primary"  onclick="downloadCertificate('pdf')">📄 Download PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cert Export — replace the existing cert-export-modal in AdminWorkshops.html -->
+<div id="cert-export-modal" class="modal-overlay" onclick="closeModalOutside(event,'cert-export-modal')">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-header">
+      <div><h3>Export Certificates</h3><p class="modal-sub">Choose scope and date range</p></div>
+      <button class="modal-close" onclick="closeModal('cert-export-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+
+      <div class="form-group" style="margin:0">
+        <label for="cert-exp-scope">Scope</label>
+        <select id="cert-exp-scope" class="form-input" onchange="toggleExportScopeFields()">
+          <option value="all">All certificates</option>
+          <option value="workshop">Specific workshop</option>
+          <option value="trainee">Specific trainee</option>
+        </select>
+      </div>
+
+      <!-- Workshop selector (shown only when scope = workshop) -->
+      <div class="form-group" style="margin:0;display:none" id="cert-exp-workshop-wrap">
+        <label for="cert-exp-workshop-id">Workshop</label>
+        <select id="cert-exp-workshop-id" class="form-input">
+          <option value="">Select workshop</option>
+        </select>
+      </div>
+
+      <!-- Trainee selector (shown only when scope = trainee) -->
+      <div style="margin:0;display:none" id="cert-exp-trainee-wrap">
+        <label style="font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;display:block">Trainee</label>
+        <input type="text" id="cert-exp-trainee-search" class="form-input"
+               placeholder="Search trainee name…"
+               oninput="filterExportTrainees()"
+               style="margin-bottom:0.5rem">
+        <div id="cert-exp-trainee-list" style="
+          border:1.5px solid #d8ead8;
+          border-radius:0.5rem;
+          max-height:180px;
+          overflow-y:auto;
+          padding:0.4rem 0;
+          background:#fff;
+        "></div>
+        <p id="cert-exp-trainee-count" style="font-size:0.75rem;color:#4B8423;margin-top:0.3rem">0 selected</p>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group" style="margin:0"><label for="cert-exp-from">From</label><input type="date" id="cert-exp-from" class="form-input"></div>
+        <div class="form-group" style="margin:0"><label for="cert-exp-to">To</label><input type="date" id="cert-exp-to" class="form-input"></div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.5rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('cert-export-modal')">Cancel</button>
+        <button class="btn-primary" onclick="doCertExport()">Download PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="toast" class="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="AdminWorkshops.js" defer></script>
+<script src="admin_nav_session.js" defer></script>
+ 
+<div id="enrollment-detail-modal" class="modal-overlay" onclick="closeModalOutside(event,'enrollment-detail-modal')">
+  <div class="modal-box large" style="max-width:680px;max-height:90vh;display:flex;flex-direction:column">
+ 
+    <div class="modal-header">
+      <div>
+        <h3>Enrollment Form — Review</h3>
+        <p class="modal-sub" id="enroll-detail-sub">Loading…</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('enrollment-detail-modal')">✕</button>
+    </div>
+ 
+    <!-- Loading state -->
+    <div id="enroll-detail-loading" style="padding:2rem;text-align:center;color:#aaa">
+      Loading enrollment details…
+    </div>
+ 
+    <!-- Content -->
+    <div id="enroll-detail-content" style="display:none;flex:1;overflow-y:auto;padding:1.5rem;flex-direction:column;gap:1.25rem">
+ 
+      <!-- Workshop -->
+      <div style="background:#f0f7eb;border-radius:8px;padding:1rem">
+        <p style="font-size:0.75rem;color:#4B8423;font-weight:700;text-transform:uppercase;margin-bottom:0.25rem">Workshop Applied For</p>
+        <p id="enroll-workshop-title" style="font-weight:700;font-size:1rem;margin:0"></p>
+        <p id="enroll-workshop-meta" style="font-size:0.8rem;color:#666;margin:0.25rem 0 0"></p>
+      </div>
+ 
+      <!-- Personal Info -->
+      <div>
+        <p style="font-size:0.8rem;font-weight:700;color:#4B8423;border-bottom:1px solid #e8f0e8;padding-bottom:0.4rem;margin-bottom:0.75rem">
+          PERSONAL INFORMATION
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem 1rem">
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Last Name</p><p id="enroll-lastname" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">First Name</p><p id="enroll-firstname" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Middle Name</p><p id="enroll-middlename" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Sex</p><p id="enroll-gender" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Civil Status</p><p id="enroll-civil" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Nationality</p><p id="enroll-nationality" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Date of Birth</p><p id="enroll-birthdate" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">PWD</p><p id="enroll-pwd" style="font-weight:600;margin:0"></p></div>
+        </div>
+      </div>
+ 
+      <!-- Contact -->
+      <div>
+        <p style="font-size:0.8rem;font-weight:700;color:#4B8423;border-bottom:1px solid #e8f0e8;padding-bottom:0.4rem;margin-bottom:0.75rem">
+          CONTACT
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1rem">
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Phone</p><p id="enroll-phone" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Email</p><p id="enroll-email" style="font-weight:600;margin:0"></p></div>
+        </div>
+      </div>
+ 
+      <!-- Address -->
+      <div>
+        <p style="font-size:0.8rem;font-weight:700;color:#4B8423;border-bottom:1px solid #e8f0e8;padding-bottom:0.4rem;margin-bottom:0.75rem">
+          ADDRESS
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1rem">
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Region</p><p id="enroll-region" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Province</p><p id="enroll-province" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">City / Municipality</p><p id="enroll-city" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Barangay</p><p id="enroll-barangay" style="font-weight:600;margin:0"></p></div>
+          <div style="grid-column:1/-1"><p style="font-size:0.72rem;color:#999;margin:0">Street / House No.</p><p id="enroll-address" style="font-weight:600;margin:0"></p></div>
+        </div>
+      </div>
+ 
+      <!-- Background -->
+      <div>
+        <p style="font-size:0.8rem;font-weight:700;color:#4B8423;border-bottom:1px solid #e8f0e8;padding-bottom:0.4rem;margin-bottom:0.75rem">
+          BACKGROUND
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1rem">
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Education</p><p id="enroll-education" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Employment</p><p id="enroll-employment" style="font-weight:600;margin:0"></p></div>
+          <div style="grid-column:1/-1"><p style="font-size:0.72rem;color:#999;margin:0">Classification</p><p id="enroll-classification" style="font-weight:600;margin:0"></p></div>
+        </div>
+      </div>
+ 
+      <!-- Guardian -->
+      <div id="enroll-guardian-section">
+        <p style="font-size:0.8rem;font-weight:700;color:#4B8423;border-bottom:1px solid #e8f0e8;padding-bottom:0.4rem;margin-bottom:0.75rem">
+          PARENT / GUARDIAN
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1rem">
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Name</p><p id="enroll-guardian-name" style="font-weight:600;margin:0"></p></div>
+          <div><p style="font-size:0.72rem;color:#999;margin:0">Address</p><p id="enroll-guardian-addr" style="font-weight:600;margin:0"></p></div>
+        </div>
+      </div>
+ 
+      <!-- Submission date -->
+      <p style="font-size:0.78rem;color:#aaa;margin:0">
+        Submitted: <span id="enroll-submitted-date">—</span>
+      </p>
+ 
+    </div><!-- /enroll-detail-content -->
+ 
+    <!-- Actions footer -->
+    <div id="enroll-detail-actions" style="display:none;padding:1rem 1.5rem;border-top:1px solid var(--color-border);gap:0.75rem;justify-content:flex-end">
+      <button class="btn-outline" onclick="closeModal('enrollment-detail-modal')">Close</button>
+      <div id="enroll-approve-reject-btns" style="display:flex;gap:0.5rem">
+        <button id="enroll-reject-btn"
+                onclick="rejectEnrollment()"
+                style="background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;
+                       padding:0.5rem 1.25rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem">
+          ✕ Reject
+        </button>
+        <button id="enroll-approve-btn"
+                onclick="approveEnrollment()"
+                style="background:#4B8423;color:#fff;border:none;
+                       padding:0.5rem 1.25rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem">
+          ✓ Approve Enrollment
+        </button>
+      </div>
+    </div>
+ 
+  </div>
+</div>
+ 
+ 
+<!-- ═══════════════════════════════════════════════════════
+     SNIPPET C — Log Attendance modal for Trainees tab
+     ADD THIS before </body> (only if missing from your HTML)
+     ═══════════════════════════════════════════════════════ -->
+ 
+<div id="tr-attendance-modal" class="modal-overlay" onclick="closeModalOutside(event,'tr-attendance-modal')">
+  <div class="modal-box large">
+    <div class="modal-header">
+      <div>
+        <h3 id="tr-att-title">Log Attendance</h3>
+        <p class="modal-sub">Select a workshop and session to begin</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('tr-attendance-modal')">✕</button>
+    </div>
+ 
+    <!-- Step 1: selector -->
+    <div id="tr-att-step-select" style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="tr-att-workshop">Workshop *</label>
+          <select id="tr-att-workshop" class="form-input">
+            <option value="">Select workshop</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tr-att-session">Session *</label>
+          <select id="tr-att-session" class="form-input">
+            <option value="">Select session</option>
+            <option value="1">Session 1</option>
+            <option value="2">Session 2</option>
+            <option value="3">Session 3</option>
+          </select>
+        </div>
+      </div>
+      <div id="tr-att-select-error" class="error-msg" style="display:none">Please select a workshop and session.</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem">
+        <button class="btn-primary" onclick="loadTRAttendanceSheet()">Load Attendance Sheet →</button>
+      </div>
+    </div>
+ 
+    <!-- Step 2: sheet -->
+    <div id="tr-att-step-sheet" style="display:none">
+      <div class="attendance-summary">
+        <span class="att-stat present-stat">Present: <span id="tr-att-present">0</span></span>
+        <span class="att-stat late-stat">Late: <span id="tr-att-late">0</span></span>
+        <span class="att-stat absent-stat">Absent: <span id="tr-att-absent">0</span></span>
+        <button class="btn-outline" onclick="backToTRSelector()" style="margin-left:auto">← Change</button>
+        <button class="btn-primary" onclick="saveTRAttendance()">Save Attendance</button>
+      </div>
+      <div class="att-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Trainee</th><th>Contact</th><th>Previous</th><th>Mark</th></tr></thead>
+          <tbody id="tr-att-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+ 
+  </div>
+</div>
+</body>
+</html>

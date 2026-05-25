@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+  Login.html — UGAT TrainTrack
+  Authentication page: Login form and New Account registration form.
+  
+  Linked files:
+    Styles  : ../css/styles.css   (shared design system)
+    Styles  : Login.css           (auth layout, two-column split)
+    Scripts : Login.js            (login validation, tab switching, password toggle)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — UGAT TrainTrack</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="Login.css">
+</head>
+<body>
+
+  <!-- ===== AUTH LAYOUT: two-column split (image | form) ===== -->
+  <div class="auth-layout">
+
+    <!-- Left column: background image + location label -->
+        <div class="auth-img-side">
+        <img
+            src="../../images/bg_side.jpg"
+            alt="UGAT Integrated Farm"
+            class="auth-bg-img"
+        >
+      <div class="auth-location">
+        <p>Located at</p>
+        <h2>San Isidro, Daet,<br>Camarines Norte</h2>
+      </div>
+    </div>
+
+    <!-- Right column: logo + login/register forms -->
+    <div class="auth-form-side">
+
+   <!-- Logo -->
+<div class="auth-logo">
+  <img src="../../images/logo.jpg" alt="UGAT Logo" class="auth-logo-img">
+  <div class="auth-logo-text">
+    <div class="logo-sub">Trainee & Farm Management System</div>
+  </div>
+</div>
+
+      <!-- Tab toggle: Login | Register -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+
+      <!-- ===== LOGIN FORM ===== -->
+      <div id="auth-login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="Enter your Email Address"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-with-icon">
+            <input
+              type="password"
+              id="login-password"
+              placeholder="Enter your Password"
+              class="form-input"
+            >
+            <!-- Toggle password visibility -->
+            <span class="input-icon" onclick="togglePwd('login-password')">👁</span>
+          </div>
+        </div>
+
+        <div class="form-row-between">
+          <label class="checkbox-label">
+            <input type="checkbox"> Remember me
+          </label>
+          <a href="#" class="link-sm">Forgot Password?</a>
+        </div>
+
+        <button class="btn-primary full" onclick="doLogin()">Login</button>
+
+        <!-- Error message: shown on failed login -->
+        <div id="login-error" class="error-msg" style="display:none">
+          Invalid credentials. Try <strong>admin@ugat.com / admin</strong> or <strong>trainee@ugat.com / trainee</strong>
+        </div>
+
+      </div>
+
+
+<!-- ===== REGISTER FORM (hidden by default) ===== -->
+<div id="auth-register-form" style="display:none">
+
+<div class="form-row-2">
+  <div class="form-group">
+    <label for="reg-firstname">First Name *</label>
+    <input type="text" id="reg-firstname" placeholder="e.g. Juan" class="form-input">
+  </div>
+  <div class="form-group">
+    <label for="reg-lastname">Last Name *</label>
+    <input type="text" id="reg-lastname" placeholder="e.g. Dela Cruz" class="form-input">
+  </div>
+</div>
+<div class="form-group">
+  <label for="reg-middlename">Middle Name <span style="font-weight:400;color:#aaa">(optional)</span></label>
+  <input type="text" id="reg-middlename" placeholder="e.g. Santos" class="form-input">
+</div>
+
+  <!-- Address: Region → Province → City/Municipality -->
+  <div class="form-group">
+    <label>Region</label>
+    <select id="reg-region" class="form-input">
+      <option value="">— Select Region —</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Province</label>
+    <select id="reg-province" class="form-input" disabled>
+      <option value="">— Select Province —</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>City / Municipality</label>
+    <select id="reg-city" class="form-input" disabled>
+      <option value="">— Select City/Municipality —</option>
+    </select>
+  </div>
+
+<!-- ADD THIS RIGHT AFTER ↓ -->
+<div class="form-group">
+  <label>Barangay</label>
+  <select id="reg-barangay" class="form-input" disabled>
+    <option value="">— Select Barangay —</option>
+  </select>
+</div>
+
+<!-- EXISTING — keep as is -->
+<div class="form-group">
+  <label for="reg-address">Street / House No. (optional)</label>
+  <input type="text" id="reg-address" placeholder="e.g. Purok 4, 12 Rizal St." class="form-input">
+</div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label for="reg-email">Email Address</label>
+      <input type="email" id="reg-email" placeholder="Enter your Email Address" class="form-input">
+    </div>
+    <div class="form-group">
+      <label for="reg-contact">Contact Number</label>
+      <input type="text" id="reg-contact" placeholder="+63 9XXXXXXXXX" class="form-input">
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label for="reg-password">Password</label>
+      <div class="input-with-icon">
+        <input type="password" id="reg-password" placeholder="Create Password" class="form-input">
+        <span class="input-icon" onclick="togglePwd('reg-password')">👁</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="reg-confirm">Re-Enter Password</label>
+      <div class="input-with-icon">
+        <input type="password" id="reg-confirm" placeholder="Confirm Password" class="form-input">
+        <span class="input-icon" onclick="togglePwd('reg-confirm')">👁</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary full" onclick="doRegister()">Register</button>
+
+  <p class="auth-center">
+    Already have an account?
+    <a href="#" onclick="switchAuthTab('login')">Login here</a>
+  </p>
+
+</div>
+
+    </div><!-- /auth-form-side -->
+  </div><!-- /auth-layout -->
+
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast"></div>
+  
+  <script src="ph_address.js"></script>
+  <script src="Login.js"></script>
+</body>
+</html>

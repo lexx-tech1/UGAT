@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<!--
+  AdminTrainees.html — UGAT TrainTrack
+  Admin: full list of registered trainees with search, filter, and CRUD actions.
+
+  Linked files:
+    Styles  : ../css/styles.css     (shared design system)
+    Styles  : AdminTrainees.css     (page-specific overrides)
+    Scripts : AdminTrainees.js      (table search/filter, add trainee modal,
+                                     attendance modal, edit/delete, toast)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trainees — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminTrainees.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== ADMIN NAVIGATION ===== -->
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html"      class="nav-link">Dashboard</a>
+      <a href="AdminTrainees.html"       class="nav-link active">Trainees</a>
+      <a href="AdminWorkshops.html"      class="nav-link">Workshops</a>
+      <a href="AdminAttendance.html"     class="nav-link">Attendance</a>
+      <a href="AdminCertifications.html" class="nav-link">Certifications</a>
+      <a href="AdminInventory.html"      class="nav-link">Inventory</a>
+      <a href="#"                        class="nav-link">Reports</a>
+    </div>
+    <div class="nav-user">
+      <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+      <span>Admin ▾</span>
+      <button class="btn-logout" onclick="window.location.href='Login.html'">Logout</button>
+    </div>
+  </nav>
+
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="app-content">
+
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Trainee Management</h2>
+        <p class="page-sub">Manage all registered trainees and their enrollment status</p>
+      </div>
+      <div class="header-btns">
+        <!-- Opens the attendance logging modal -->
+        <button class="btn-secondary" onclick="openModal('attendance-modal')">Log Attendance</button>
+        <!-- Opens the add new trainee modal -->
+        <button class="btn-primary"   onclick="openModal('add-trainee-modal')">+ Add new trainee</button>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">48</div>
+        <div class="stat-label">Total Trainees</div>
+        <div class="stat-sub">All time registered</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-num">32</div>
+        <div class="stat-label">Active Trainees</div>
+        <div class="stat-sub">Currently enrolled</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">11</div>
+        <div class="stat-label">Certified</div>
+        <div class="stat-sub">Certificate issued</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-sub">Awaiting approval</div>
+      </div>
+    </div>
+
+    <!-- Search + filters -->
+    <div class="table-filters">
+      <input
+        type="text"
+        placeholder="Search trainees..."
+        class="search-input"
+        oninput="filterTable(this.value)"
+        id="trainee-search"
+      >
+      <select class="filter-select" onchange="filterByStatus(this.value)">
+        <option value="">All Status</option>
+        <option value="Enrolled">Enrolled</option>
+        <option value="Certified">Certified</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <select class="filter-select" onchange="filterByWorkshop(this.value)">
+        <option value="">All Workshops</option>
+        <option value="Organic Urban Gardening">Organic Urban Gardening</option>
+        <option value="Seed Saving">Seed Saving &amp; Propagation</option>
+      </select>
+      <select class="filter-select" onchange="sortTable(this.value)">
+        <option value="newest">Sort by: Newest</option>
+        <option value="name">Sort by: Name</option>
+      </select>
+    </div>
+
+    <!-- Trainees table -->
+    <h3 class="section-title">All Trainees</h3>
+    <div class="data-table-wrap">
+      <table class="data-table" id="trainees-table">
+        <thead>
+          <tr>
+            <th>Trainee</th>
+            <th>Contact</th>
+            <th>Workshop Enrolled</th>
+            <th>Attendance</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="trainees-tbody">
+          <!-- Rows injected by AdminTrainees.js -->
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+
+<!-- ===================================================
+     MODAL 1: ADD NEW TRAINEE
+     Full form: name, contact, address, email, workshop
+     =================================================== -->
+<div id="add-trainee-modal" class="modal-overlay" onclick="closeModalOutside(event, 'add-trainee-modal')">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <div>
+        <h3>Add New Trainee</h3>
+        <p class="modal-sub">Fill in the trainee's details and assign a workshop</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('add-trainee-modal')">✕</button>
+    </div>
+
+    <div style="padding:1.5rem">
+
+      <!-- Row 1: Name fields -->
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="nt-lastname">Last Name *</label>
+          <input type="text" id="nt-lastname" placeholder="e.g. Dela Cruz" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="nt-firstname">First Name *</label>
+          <input type="text" id="nt-firstname" placeholder="e.g. Juan" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="nt-middlename">Middle Name</label>
+          <input type="text" id="nt-middlename" placeholder="e.g. Santos" class="form-input">
+        </div>
+      </div>
+
+      <!-- Row 2: Contact + Email -->
+<div class="form-group">
+  <label for="nt-contact">Contact Number *</label>
+<input type="text" id="nt-contact"
+       placeholder="+63 9XX XXX XXXX"
+       class="form-input"
+       value="+63 "
+       onkeydown="return phoneKeydown(event, this)"
+       onkeyup="enforcePhonePrefix(this)"
+       onpaste="return false"
+       onclick="moveCursorToEnd(this)">
+  <small style="color:#888;font-size:0.75rem">Temp password will be sent here via SMS</small>
+</div>
+
+
+      <!-- Row 3: Address -->
+      <div class="form-group">
+        <label for="nt-address">Complete Address *</label>
+        <input type="text" id="nt-address" placeholder="House no., Street, Barangay, City, Province" class="form-input">
+      </div>
+
+      <!-- Row 4: Workshop + Status -->
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="nt-workshop">Workshop Enrolled *</label>
+          <select id="nt-workshop" class="form-input">
+            <option value="">Select a workshop</option>
+            <option>Organic Urban Gardening</option>
+            <option>Seed Saving and Propagation</option>
+            <option>Mushroom Cultivation</option>
+            <option>Hydroponics System Setup</option>
+            <option>Raised Bed Vegetable Gardening</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nt-status">Status *</label>
+          <select id="nt-status" class="form-input">
+            <option value="Enrolled">Enrolled</option>
+            <option value="Pending">Pending</option>
+            <option value="Certified">Certified</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div id="add-trainee-error" class="error-msg" style="display:none"></div>
+
+      <!-- Footer actions -->
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('add-trainee-modal')">Cancel</button>
+        <button class="btn-primary"  onclick="submitNewTrainee()">Add Trainee</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================================================
+     MODAL 2: LOG ATTENDANCE
+     Workshop + session selector, then per-trainee marks
+     =================================================== -->
+<div id="attendance-modal" class="modal-overlay" onclick="closeModalOutside(event, 'attendance-modal')">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <div>
+        <h3 id="att-modal-title">Log Attendance</h3>
+        <p class="modal-sub" id="att-modal-sub">Select a workshop and session to begin</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('attendance-modal')">✕</button>
+    </div>
+
+    <!-- Step 1: Workshop + session selector -->
+    <div id="att-step-select" style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="att-workshop-sel">Workshop *</label>
+          <select id="att-workshop-sel" class="form-input" onchange="updateSessionOptions()">
+            <option value="">Select workshop</option>
+            <option value="Seed Saving and Propagation">Seed Saving and Propagation</option>
+            <option value="Organic Urban Gardening">Organic Urban Gardening</option>
+            <option value="Mushroom Cultivation">Mushroom Cultivation</option>
+            <option value="Raised Bed Vegetable Gardening">Raised Bed Vegetable Gardening</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="att-session-sel">Session *</label>
+          <select id="att-session-sel" class="form-input">
+            <option value="">Select session</option>
+            <option value="1">Session 1</option>
+            <option value="2">Session 2</option>
+            <option value="3">Session 3</option>
+          </select>
+        </div>
+      </div>
+      <div id="att-select-error" class="error-msg" style="display:none">Please select a workshop and session.</div>
+      <div style="display:flex; justify-content:flex-end; margin-top:1rem">
+        <button class="btn-primary" onclick="loadAttendanceSheet()">Load Attendance Sheet →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Attendance sheet (hidden until workshop+session selected) -->
+    <div id="att-step-sheet" style="display:none">
+      <!-- Summary counters -->
+      <div class="attendance-summary">
+        <span class="att-stat present-stat">Present: <span id="att-present">0</span></span>
+        <span class="att-stat late-stat">Late: <span id="att-late">0</span></span>
+        <span class="att-stat absent-stat">Absent: <span id="att-absent">0</span></span>
+        <button class="btn-outline" onclick="backToSelector()" style="margin-left:auto">← Change</button>
+        <button class="btn-primary" onclick="saveAttendance()">Save Attendance</button>
+      </div>
+
+      <!-- Trainee rows -->
+      <div class="att-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Trainee</th>
+              <th>Contact Number</th>
+              <th>Previous Session</th>
+              <th>Mark Attendance</th>
+            </tr>
+          </thead>
+          <tbody id="att-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ===================================================
+     MODAL 3: EDIT TRAINEE
+     Pre-filled form, same fields as Add
+     =================================================== -->
+<div id="edit-trainee-modal" class="modal-overlay" onclick="closeModalOutside(event, 'edit-trainee-modal')">
+  <div class="modal-box large">
+
+    <div class="modal-header">
+      <div>
+        <h3>Edit Trainee</h3>
+        <p class="modal-sub">Update the trainee's information</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('edit-trainee-modal')">✕</button>
+    </div>
+
+    <div style="padding:1.5rem">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="et-name">Full Name *</label>
+          <input type="text" id="et-name" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="et-email">Email Address *</label>
+          <input type="email" id="et-email" class="form-input">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="et-contact">Contact Number *</label>
+          <input type="text" id="et-contact" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="et-address">Address *</label>
+          <input type="text" id="et-address" class="form-input">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="et-workshop">Workshop Enrolled</label>
+          <select id="et-workshop" class="form-input">
+            <option>Organic Urban Gardening</option>
+            <option>Seed Saving and Propagation</option>
+            <option>Mushroom Cultivation</option>
+            <option>Hydroponics System Setup</option>
+            <option>Raised Bed Vegetable Gardening</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="et-status">Status</label>
+          <select id="et-status" class="form-input">
+            <option value="Enrolled">Enrolled</option>
+            <option value="Pending">Pending</option>
+            <option value="Certified">Certified</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Hidden: stores which row is being edited -->
+      <input type="hidden" id="et-row-index">
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('edit-trainee-modal')">Cancel</button>
+        <button class="btn-primary"  onclick="saveEditTrainee()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================================================
+     MODAL 4: DELETE CONFIRMATION
+     =================================================== -->
+<div id="delete-modal" class="modal-overlay" onclick="closeModalOutside(event, 'delete-modal')">
+  <div class="modal-box" style="max-width:420px; text-align:center; padding:2rem">
+    <div style="font-size:2.5rem; margin-bottom:1rem">🗑️</div>
+    <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:0.5rem">Delete Trainee?</h3>
+    <p id="delete-modal-msg" style="font-size:0.85rem; color:#666; margin-bottom:1.5rem">
+      This action cannot be undone.
+    </p>
+    <input type="hidden" id="delete-row-index">
+    <div style="display:flex; justify-content:center; gap:0.75rem">
+      <button class="btn-outline" onclick="closeModal('delete-modal')">Cancel</button>
+      <button class="btn-primary" style="background:#e74c3c" onclick="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="toast" class="toast"></div>
+<script src="AdminTrainees.js?v=2"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

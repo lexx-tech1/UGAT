@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!--
+  Landing.html — UGAT TrainTrack
+  Public-facing landing page.
+
+  Nav links:
+    Home     → Landing.html
+    About    → LandingAbout.html
+    Features → LandingFeatures.html
+    Products → LandingProducts.html
+    Contact  → LandingContact.html
+
+  Linked files:
+    Styles  : ../css/styles.css   (shared design system)
+    Styles  : Landing.css         (page-specific layout)
+    Scripts : Landing.js          (nav, CTA routing)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UGAT TrainTrack — Trainee & Farm Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="Landing.css">
+</head>
+<body>
+
+  <!-- Top green accent bar -->
+  <div class="top-bar"></div>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="landing-nav" id="landing-nav">
+    <!-- Logo — left -->
+    <div class="nav-logo-wrap">
+      <a href="Landing.html" class="nav-logo-link">
+        <img src="../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" class="nav-logo-fallback" style="display:none">
+          <span>🌱</span><span class="logo-text">UGAT</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Nav links — center -->
+    <ul class="nav-links" role="list">
+      <li><a href="../auth/Login.html"   class="nav-link active">Home</a></li>
+      <li><a href="LandingAbout.html"    class="nav-link">About</a></li>
+      <li><a href="LandingFeatures.html" class="nav-link">Features</a></li>
+      <li><a href="LandingProducts.html" class="nav-link">Products</a></li>
+      <li><a href="LandingContact.html"  class="nav-link">Contact</a></li>
+    </ul>
+
+    <!-- CTA — right -->
+    <div class="nav-cta">
+      <button class="btn-nav-cta" onclick="goToLogin()">Create Account &nbsp;→</button>
+    </div>
+  </nav>
+
+
+  <!-- ===== HERO ===== -->
+  <section class="landing-hero">
+    <div class="hero-bg-pattern" aria-hidden="true"></div>
+
+    <!-- Left: headline + CTA -->
+    <div class="hero-left">
+      <p class="hero-sub">WELCOME TO</p>
+      <h1 class="hero-title">
+        UGAT TrainTrack<br>
+        <span class="hero-title-light">Trainee &amp; Farm<br>Management System</span>
+      </h1>
+      <p class="hero-desc">
+        A centralized system for managing trainee records, workshop
+        attendance, certifications, and farm product inventory for
+        UGAT Integrated Farm.
+      </p>
+      <button class="btn-hero" onclick="goToLogin()">Get Started &nbsp;→</button>
+    </div>
+
+    <!-- Right: dots + photo -->
+    <div class="hero-right">
+      <!-- Decorative dot column (matches image 2) -->
+      <div class="hero-dots" aria-hidden="true">
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot active-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+      </div>
+
+      <div class="hero-img-wrap">
+        <img
+        src="../../images/landing.jpg" 
+        alt="UGAT Integrated Farm community training"
+        class="hero-img"
+        >
+        <div class="hero-badge">
+          <span>📍</span>
+          <div>
+            <div class="badge-title">UGAT Integrated Farm</div>
+            <div class="badge-sub">San Isidro, Daet, Camarines Norte</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== FEATURE CARDS ===== -->
+  <section class="landing-features">
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Trainee Management</h3>
+      <p>Register, track, and manage all trainees and their workshop enrollment status.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Workshop Tracking</h3>
+      <p>Manage workshop schedules, sessions, and real-time attendance logging.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3>Certifications</h3>
+      <p>Automatically track eligibility and issue digital certificates with SMS alerts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌾</div>
+      <h3>Farm Shop &amp; Inventory</h3>
+      <p>Monitor farm products and training kit stock levels with smart alerts.</p>
+    </div>
+  </section>
+
+
+  <div id="toast" class="toast"></div>
+  <script src="Landing.js"></script>
+</body>
+</html>

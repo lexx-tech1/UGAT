@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+  TraineeDashboard.html — UGAT TrainTrack
+  Trainee's main dashboard: enrolled workshops overview, certifications panel,
+  and notifications panel.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — UGAT TrainTrack</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="TraineeDashboard.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== TRAINEE NAVIGATION ===== -->
+  <nav class="app-nav">
+    <div class="nav-logo">
+      <a href="TraineeDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+
+    <div class="nav-links">
+      <a href="TraineeDashboard.html"  class="nav-link active">Dashboard</a>
+      <a href="TraineeWorkshops.html"  class="nav-link">My Workshops</a>
+      <a href="TraineeShop.html"       class="nav-link">Farm Shop</a>
+    </div>
+
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="" alt="" class="user-avatar">
+        <span class="user-dropdown-name">… <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="" alt="" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Loading…</div>
+            <div class="user-dropdown-role">Trainee</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="profile.php" class="user-dropdown-item">My Profile</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html"  class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="app-content">
+
+    <!-- Welcome banner — name injected by nav_session.js -->
+    <div class="welcome-banner">
+      <div>
+        <p class="welcome-sub">Welcome back,</p>
+        <h2 class="welcome-title">Loading…</h2>
+      </div>
+      <button class="btn-primary" onclick="window.location.href='TraineeWorkshops.html'">
+        + Enroll in a workshop
+      </button>
+    </div>
+
+    <!-- ===== ENROLLED WORKSHOPS (top 3, rendered by JS) ===== -->
+    <div class="section-header">
+      <h3>My Enrolled Workshops</h3>
+      <a href="TraineeWorkshops.html" class="link-green">See all</a>
+    </div>
+
+    <!-- JS renders cards here -->
+    <div class="workshop-cards">
+      <div style="grid-column:1/-1;padding:2rem;text-align:center;color:#aaa">
+        Loading workshops…
+      </div>
+    </div>
+
+    <!-- ===== BOTTOM PANELS ===== -->
+    <div class="dashboard-bottom">
+
+      <!-- Certifications panel -->
+      <div class="cert-panel">
+        <div class="panel-header">
+          <h3>My Certifications</h3>
+          <button class="btn-outline-sm"
+                  onclick="window.location.href='TraineeCertifications.html'">
+            View All
+          </button>
+        </div>
+        <!-- JS renders items here -->
+        <div class="cert-list">
+          <p style="padding:1rem;color:#aaa;font-size:.85rem">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Notifications panel -->
+      <div class="notif-panel">
+        <div class="panel-header">
+          <h3>Notifications</h3>
+<button class="btn-outline-sm"
+        onclick="window.location.href='TraineeNotifications.html'">
+  View All
+</button>        </div>
+        <!-- JS renders items here -->
+        <div class="notif-list">
+          <p style="padding:1rem;color:#aaa;font-size:.85rem">Loading…</p>
+        </div>
+      </div>
+
+    </div><!-- /dashboard-bottom -->
+
+  </main>
+</div><!-- /app-layout -->
+
+<div id="toast" class="toast"></div>
+
+<script src="TraineeDashboard.js"></script>
+<script src="nav_session.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--
+  LandingProducts.html — UGAT TrainTrack
+  Products page: farm products and training kits available from UGAT Integrated Farm.
+
+  Linked files:
+    Styles  : ../css/styles.css, Landing.css, LandingInner.css
+    Scripts : Landing.js
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="Landing.css">
+  <link rel="stylesheet" href="LandingInner.css">
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-logo-wrap">
+      <a href="Landing.html" class="nav-logo-link">
+        <img src="../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" class="nav-logo-fallback" style="display:none">
+          <span>🌱</span><span class="logo-text">UGAT</span>
+        </div>
+      </a>
+    </div>
+    <ul class="nav-links" role="list">
+      <li><a href="Landing.html"         class="nav-link">Home</a></li>
+      <li><a href="LandingAbout.html"    class="nav-link">About</a></li>
+      <li><a href="LandingFeatures.html" class="nav-link">Features</a></li>
+      <li><a href="LandingProducts.html" class="nav-link active">Products</a></li>
+      <li><a href="LandingContact.html"  class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav-cta" onclick="goToLogin()">Create Account &nbsp;→</button>
+    </div>
+  </nav>
+
+  <section class="inner-hero">
+    <div class="inner-hero-text">
+      <p class="hero-sub">FROM THE FARM</p>
+      <h1 class="inner-title">Our Products</h1>
+      <p class="inner-desc">Farm-fresh products and training kits available directly from UGAT Integrated Farm. Log in to place an order.</p>
+    </div>
+  </section>
+
+  <main class="inner-content">
+
+    <h2 class="inner-section-title">Farm Products</h2>
+    <div class="products-grid">
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1615811648503-479d178b6e6c?w=400&q=80" alt="Organic fertilizer">
+        <div class="product-body">
+          <span class="product-cat">Farm product</span>
+          <h3>Organic Fertilizer (500g)</h3>
+          <p>Natural compost-based fertilizer for vegetable gardens</p>
+          <div class="product-price">₱120.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">
+            Order Now →
+          </button>
+        </div>
+      </div>
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80" alt="Vermicast">
+        <div class="product-body">
+          <span class="product-cat">Farm product</span>
+          <h3>Vermicast Compost (1kg)</h3>
+          <p>Premium worm castings for soil enrichment</p>
+          <div class="product-price">₱180.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">Order Now →</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80" alt="Seeds">
+        <div class="product-body">
+          <span class="product-cat">Farm product</span>
+          <h3>Heirloom Seed Pack (assorted)</h3>
+          <p>Mixed vegetable seeds — sili, pechay, kangkong</p>
+          <div class="product-price">₱95.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">Order Now →</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="inner-section-title" style="margin-top:2.5rem">Training Kits</h2>
+    <div class="products-grid">
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80" alt="Seedling kit">
+        <div class="product-body">
+          <span class="product-cat">Training kit</span>
+          <h3>Seedling Starter Kit</h3>
+          <p>Seedling tray, soil mix, fertilizer &amp; guide booklet</p>
+          <div class="product-price">₱350.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">Order Now →</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1585664811087-47f65abbad64?w=400&q=80" alt="Aquaponics kit">
+        <div class="product-body">
+          <span class="product-cat">Training kit</span>
+          <h3>Aquaponics Training Kit</h3>
+          <p>Mini aquaponics setup with fish tank &amp; grow bed</p>
+          <div class="product-price">₱680.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">Order Now →</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&q=80" alt="Mushroom kit">
+        <div class="product-body">
+          <span class="product-cat">Training kit</span>
+          <h3>Mushroom Cultivation Kit</h3>
+          <p>Mushroom substrate bags, spawn &amp; instruction manual</p>
+          <div class="product-price">₱520.00</div>
+          <button class="btn-nav-cta" onclick="goToLogin()" style="margin-top:0.75rem;width:100%;justify-content:center">Order Now →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-cta-banner">
+      <p>Log in to your trainee account to browse the full shop and place orders.</p>
+      <button class="btn-hero" onclick="goToLogin()">Go to Farm Shop →</button>
+    </div>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="Landing.js"></script>
+</body>
+</html>

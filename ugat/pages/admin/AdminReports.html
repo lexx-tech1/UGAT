@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<!--
+  AdminReports.html — UGAT TrainTrack
+  Full reports hub with 5 sections:
+    1. Overview       — summary KPIs + printable program report
+    2. Program        — enrollment trends, workshop completion, dropouts
+    3. Attendance     — per-workshop rates, at-risk trainees, session log
+    4. Certifications — issued, eligible, certification rate
+    5. Inventory      — stock levels, movements, value summary
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="AdminReports.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav admin-nav">
+    <div class="nav-logo">
+      <a href="AdminDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="AdminDashboard.html" class="nav-link">Dashboard</a>
+      <a href="AdminWorkshops.html" class="nav-link">Programs</a>
+      <a href="AdminInventory.html" class="nav-link">Inventory</a>
+      <a href="AdminReports.html"   class="nav-link active">Reports</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)" id="user-trigger">
+        <img src="https://i.pravatar.cc/36?img=12" alt="Admin" class="user-avatar">
+        <span class="user-dropdown-name">Admin <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="https://i.pravatar.cc/48?img=12" alt="Admin" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Maria Santos</div>
+            <div class="user-dropdown-role">System Administrator</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="AdminProfile.html"  class="user-dropdown-item">My Profile</a>
+        <a href="AdminSettings.html" class="user-dropdown-item">System Settings</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Reports</h2>
+        <p class="page-sub">Generate, filter, and export program reports for UGAT Integrated Farm</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center">
+        <select class="filter-select" id="rpt-period" onchange="refreshAllReports()">
+          <option value="all">All Time</option>
+          <option value="month" selected>This Month</option>
+          <option value="quarter">This Quarter</option>
+          <option value="year">This Year</option>
+          <option value="custom">Custom Range</option>
+        </select>
+        <button class="btn-secondary" onclick="exportAsPdf()">⬇ Export PDF</button>
+        <button class="btn-primary"   onclick="openModal('export-all-modal')">⬇ Export All</button>
+      </div>
+    </div>
+
+    <!-- Custom date range -->
+    <div id="custom-range" style="display:none;margin-bottom:1rem">
+      <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+        <label style="font-size:var(--text-body-sm);font-weight:600">From:</label>
+        <input type="date" id="rpt-from" class="form-input" style="width:auto">
+        <label style="font-size:var(--text-body-sm);font-weight:600">To:</label>
+        <input type="date" id="rpt-to" class="form-input" style="width:auto">
+        <button class="btn-primary" onclick="reloadActiveTab()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="pm-tab-bar">
+      <button class="pm-tab active" data-tab="overview"       onclick="switchRptTab('overview',      this)">Overview</button>
+      <button class="pm-tab"        data-tab="program"        onclick="switchRptTab('program',       this)">Program</button>
+      <button class="pm-tab"        data-tab="attendance"     onclick="switchRptTab('attendance',    this)">Attendance</button>
+      <button class="pm-tab"        data-tab="certifications" onclick="switchRptTab('certifications',this)">Certifications</button>
+      <button class="pm-tab"        data-tab="inventory"      onclick="switchRptTab('inventory',     this)">Inventory</button>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         TAB 1 — OVERVIEW
+         ══════════════════════════════════════ -->
+    <div id="rpt-tab-overview" class="pm-tab-content">
+
+      <!-- KPI cards — all show — until JS fills real data -->
+      <div class="stat-cards" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card highlight">
+          <div class="stat-num" id="ov-kpi-trainees">—</div>
+          <div class="stat-label">Total Trainees</div>
+          <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="ov-kpi-workshops">—</div>
+          <div class="stat-label">Active Workshops</div>
+          <div class="stat-sub">Ongoing + upcoming</div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-num" id="ov-kpi-att">—</div>
+          <div class="stat-label">Avg. Attendance Rate</div>
+          <div class="stat-sub">All workshops</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-num" id="ov-kpi-certs">—</div>
+          <div class="stat-label">Certificates Issued</div>
+          <div class="stat-sub" id="ov-kpi-cert-sub">— certification rate</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-num" id="ov-kpi-alerts">—</div>
+          <div class="stat-label">Stock Alerts</div>
+          <div class="stat-sub" id="ov-kpi-alerts-sub">— out · — low</div>
+        </div>
+      </div>
+
+      <!-- Printable summary report -->
+      <div class="rpt-card" id="printable-report">
+        <div class="rpt-card-header">
+          <div>
+            <h3>Program Summary Report</h3>
+            <p class="rpt-card-sub">UGAT Integrated Farm · San Isidro, Daet, Camarines Norte · Generated <span id="ov-generated-date"></span></p>
+          </div>
+          <button class="btn-secondary" onclick="exportSection('overview')">⬇ Export PDF</button>
+        </div>
+
+        <div class="rpt-summary-grid">
+          <!-- Trainees -->
+          <div class="rpt-summary-block">
+            <h4 class="rpt-block-title">👥 Trainees</h4>
+            <div class="rpt-row"><span>Total registered</span><strong id="ov-sum-total">—</strong></div>
+            <div class="rpt-row"><span>Active / enrolled</span><strong id="ov-sum-active">—</strong></div>
+            <div class="rpt-row"><span>Certified</span><strong id="ov-sum-certified">—</strong></div>
+            <div class="rpt-row"><span>Pending review</span><strong id="ov-sum-pending">—</strong></div>
+            <div class="rpt-row"><span>Inactive / no-show</span><strong id="ov-sum-inactive">—</strong></div>
+          </div>
+          <!-- Workshops -->
+          <div class="rpt-summary-block">
+            <h4 class="rpt-block-title">🌱 Workshops</h4>
+            <div class="rpt-row"><span>Total workshops</span><strong id="ov-sum-ws-total">—</strong></div>
+            <div class="rpt-row"><span>Upcoming</span><strong id="ov-sum-ws-upcoming">—</strong></div>
+            <div class="rpt-row"><span>Ongoing</span><strong id="ov-sum-ws-ongoing">—</strong></div>
+            <div class="rpt-row"><span>Completed</span><strong id="ov-sum-ws-completed">—</strong></div>
+            <div class="rpt-row"><span>Total sessions logged</span><strong id="ov-sum-ws-sessions">—</strong></div>
+          </div>
+          <!-- Attendance -->
+          <div class="rpt-summary-block">
+            <h4 class="rpt-block-title">📋 Attendance</h4>
+            <div class="rpt-row"><span>Total session records</span><strong id="ov-sum-att-total">—</strong></div>
+            <div class="rpt-row"><span>Present</span><strong id="ov-sum-att-present">—</strong></div>
+            <div class="rpt-row"><span>Late</span><strong id="ov-sum-att-late">—</strong></div>
+            <div class="rpt-row"><span>Absent</span><strong id="ov-sum-att-absent">—</strong></div>
+            <div class="rpt-row"><span>At-risk trainees</span><strong id="ov-sum-att-atrisk">—</strong></div>
+          </div>
+          <!-- Certifications -->
+          <div class="rpt-summary-block">
+            <h4 class="rpt-block-title">🎓 Certifications</h4>
+            <div class="rpt-row"><span>Issued all time</span><strong id="ov-sum-cert-issued">—</strong></div>
+            <div class="rpt-row"><span>Eligible, not issued</span><strong id="ov-sum-cert-eligible">—</strong></div>
+            <div class="rpt-row"><span>Certification rate</span><strong id="ov-sum-cert-rate">—</strong></div>
+            <div class="rpt-row"><span>SMS notifications sent</span><strong id="ov-sum-sms-sent">—</strong></div>
+            <div class="rpt-row"><span>Pending SMS</span><strong id="ov-sum-sms-pending">—</strong></div>
+          </div>
+        </div>
+
+        <!-- Enrollment trend chart -->
+        <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--color-border)">
+          <h4 class="rpt-block-title" style="margin-bottom:0.75rem">Enrollment Trend — 2026</h4>
+          <div class="rpt-chart-wrap">
+            <canvas id="ov-enrollment-chart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /rpt-tab-overview -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 2 — PROGRAM
+         ══════════════════════════════════════ -->
+    <div id="rpt-tab-program" class="pm-tab-content" style="display:none">
+
+      <div class="rpt-grid-2">
+
+        <!-- Enrollment by workshop -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Enrollment by Workshop</h3><p class="rpt-card-sub">Trainee count per workshop</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('enrollment')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Workshop</th><th>Category</th><th>Enrolled</th><th>Max Slots</th><th>Fill Rate</th><th>Status</th></tr></thead>
+              <tbody id="rpt-enrollment-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Workshop completion -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Workshop Completion</h3><p class="rpt-card-sub">Sessions completed vs scheduled</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('completion')">⬇ CSV</button>
+          </div>
+          <div id="rpt-completion-bars" style="padding:0.25rem 0"></div>
+        </div>
+
+      </div>
+
+      <!-- At-risk trainees -->
+      <div class="rpt-card" style="margin-top:1.25rem">
+        <div class="rpt-card-header">
+          <div><h3>Inactive &amp; At-Risk Trainees</h3><p class="rpt-card-sub">Trainees with 0% attendance or marked inactive</p></div>
+          <button class="btn-secondary btn-sm-rpt" onclick="exportSection('atrisk')">⬇ CSV</button>
+        </div>
+        <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+          <table class="data-table">
+            <thead><tr><th>Trainee</th><th>Workshop</th><th>Sessions Attended</th><th>Attendance Rate</th><th>Last Seen</th><th>Status</th></tr></thead>
+            <tbody id="rpt-atrisk-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /rpt-tab-program -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 3 — ATTENDANCE
+         ══════════════════════════════════════ -->
+    <div id="rpt-tab-attendance" class="pm-tab-content" style="display:none">
+
+      <!-- KPI cards -->
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card">
+          <div class="stat-num" id="att-kpi-total">—</div>
+          <div class="stat-label">Total Records</div>
+          <div class="stat-sub">All sessions</div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-num" id="att-kpi-rate">—</div>
+          <div class="stat-label">Overall Rate</div>
+          <div class="stat-sub">Present + Late</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-num" id="att-kpi-atrisk">—</div>
+          <div class="stat-label">At-Risk Trainees</div>
+          <div class="stat-sub">&lt; 67% attendance</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-num" id="att-kpi-absent">—</div>
+          <div class="stat-label">Total Absences</div>
+          <div class="stat-sub">Of all records</div>
+        </div>
+      </div>
+
+      <div class="rpt-grid-2" style="margin-top:1.25rem">
+
+        <!-- Per-workshop breakdown -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Attendance by Workshop</h3><p class="rpt-card-sub">Present / Late / Absent breakdown</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('att-workshop')">⬇ CSV</button>
+          </div>
+          <div id="rpt-att-bars" style="padding:0.25rem 0"></div>
+        </div>
+
+        <!-- Low attendance trainees -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Low Attendance Trainees</h3><p class="rpt-card-sub">Below 67% — at risk of not qualifying</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('low-att')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Trainee</th><th>Workshop</th><th>Rate</th><th>Sessions</th></tr></thead>
+              <tbody id="rpt-lowatt-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Session log -->
+      <div class="rpt-card" style="margin-top:1.25rem">
+        <div class="rpt-card-header">
+          <div><h3>Session-by-Session Log</h3><p class="rpt-card-sub">Complete attendance record per session</p></div>
+          <button class="btn-secondary btn-sm-rpt" onclick="exportSection('session-log')">⬇ CSV</button>
+        </div>
+        <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+          <table class="data-table">
+            <thead><tr><th>Workshop</th><th>Session</th><th>Date</th><th>Present</th><th>Late</th><th>Absent</th><th>Rate</th></tr></thead>
+            <tbody id="rpt-session-log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /rpt-tab-attendance -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 4 — CERTIFICATIONS
+         ══════════════════════════════════════ -->
+    <div id="rpt-tab-certifications" class="pm-tab-content" style="display:none">
+
+      <!-- KPI cards -->
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card highlight">
+          <div class="stat-num" id="cert-kpi-issued">—</div>
+          <div class="stat-label">Total Issued</div>
+          <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-num" id="cert-kpi-eligible">—</div>
+          <div class="stat-label">Eligible, Pending</div>
+          <div class="stat-sub">Action needed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="cert-kpi-rate">—</div>
+          <div class="stat-label">Certification Rate</div>
+          <div class="stat-sub">Of total enrolled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="cert-kpi-sms">—</div>
+          <div class="stat-label">SMS Sent</div>
+          <div class="stat-sub" id="cert-kpi-sms-sub">— pending</div>
+        </div>
+      </div>
+
+      <div class="rpt-grid-2" style="margin-top:1.25rem">
+
+        <!-- Certs by workshop -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Certificates by Workshop</h3><p class="rpt-card-sub">Issued vs eligible per workshop</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('certs-workshop')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Workshop</th><th>Enrolled</th><th>Eligible</th><th>Issued</th><th>Rate</th></tr></thead>
+              <tbody id="rpt-cert-workshop-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Eligible not yet issued -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Eligible — Not Yet Issued</h3><p class="rpt-card-sub">Trainees ready but awaiting certificate</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('cert-pending')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Trainee</th><th>Workshop</th><th>Rate</th><th>Completed On</th></tr></thead>
+              <tbody id="rpt-cert-pending-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Issued log -->
+      <div class="rpt-card" style="margin-top:1.25rem">
+        <div class="rpt-card-header">
+          <div><h3>Issued Certificates Log</h3><p class="rpt-card-sub">Complete list of all issued certificates</p></div>
+          <div style="display:flex;gap:0.6rem">
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('certs-log')">⬇ CSV</button>
+            <button class="btn-primary btn-sm-rpt"   onclick="exportSection('certs-pdf')">⬇ PDF</button>
+          </div>
+        </div>
+        <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+          <table class="data-table">
+            <thead><tr><th>Trainee</th><th>Workshop</th><th>Certificate No.</th><th>Issued On</th><th>Attendance Rate</th><th>SMS Sent</th></tr></thead>
+            <tbody id="rpt-cert-log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /rpt-tab-certifications -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 5 — INVENTORY
+         ══════════════════════════════════════ -->
+    <div id="rpt-tab-inventory" class="pm-tab-content" style="display:none">
+
+      <!-- KPI cards -->
+      <div class="stat-cards" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card highlight">
+          <div class="stat-num" id="inv-kpi-value">—</div>
+          <div class="stat-label">Total Stock Value</div>
+          <div class="stat-sub">At current prices</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="inv-kpi-skus">—</div>
+          <div class="stat-label">Total SKUs</div>
+          <div class="stat-sub">Unique items tracked</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-num" id="inv-kpi-low">—</div>
+          <div class="stat-label">Low Stock Items</div>
+          <div class="stat-sub">Below reorder point</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-num" id="inv-kpi-out">—</div>
+          <div class="stat-label">Out of Stock</div>
+          <div class="stat-sub">Immediate restock needed</div>
+        </div>
+      </div>
+
+      <div class="rpt-grid-2" style="margin-top:1.25rem">
+
+        <!-- Stock value breakdown -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Stock Value by Item</h3><p class="rpt-card-sub">Current value at unit price</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('inv-value')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit Price</th><th>Value</th><th>Status</th></tr></thead>
+              <tbody id="rpt-inv-value-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Reorder summary -->
+        <div class="rpt-card">
+          <div class="rpt-card-header">
+            <div><h3>Reorder Alert Summary</h3><p class="rpt-card-sub">Items at or below reorder point</p></div>
+            <button class="btn-secondary btn-sm-rpt" onclick="exportSection('inv-reorder')">⬇ CSV</button>
+          </div>
+          <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+            <table class="data-table">
+              <thead><tr><th>Item</th><th>Stock</th><th>Reorder Pt.</th><th>Suggest Qty</th><th>Est. Cost</th><th>Priority</th></tr></thead>
+              <tbody id="rpt-inv-reorder-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Stock movement summary -->
+      <div class="rpt-card" style="margin-top:1.25rem">
+        <div class="rpt-card-header">
+          <div><h3>Stock Movement Summary</h3><p class="rpt-card-sub">Total in/out per item for the selected period</p></div>
+          <button class="btn-secondary btn-sm-rpt" onclick="exportSection('inv-movements')">⬇ CSV</button>
+        </div>
+        <div class="data-table-wrap" style="box-shadow:none;border:none;padding:0">
+          <table class="data-table">
+            <thead><tr><th>Item</th><th>Opening Stock</th><th>Total In</th><th>Total Out</th><th>Current Stock</th><th>Net Movement</th></tr></thead>
+            <tbody id="rpt-inv-movement-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /rpt-tab-inventory -->
+
+  </main>
+</div><!-- /app-layout -->
+
+
+<!-- EXPORT ALL MODAL -->
+<div id="export-all-modal" class="modal-overlay" onclick="closeModalOutside(event,'export-all-modal')">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div><h3>Export Full Report</h3><p class="modal-sub">Download all sections as one file</p></div>
+      <button class="modal-close" onclick="closeModal('export-all-modal')">✕</button>
+    </div>
+    <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+      <div class="form-group" style="margin:0">
+        <label>Sections to include</label>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:var(--text-body-sm)"><input type="checkbox" checked> Program Summary</label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:var(--text-body-sm)"><input type="checkbox" checked> Attendance Report</label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:var(--text-body-sm)"><input type="checkbox" checked> Certification Report</label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:var(--text-body-sm)"><input type="checkbox" checked> Inventory Summary</label>
+        </div>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label for="exp-all-format">Format</label>
+        <select id="exp-all-format" class="form-input">
+          <option value="pdf">PDF (print-ready)</option>
+          <option value="excel">Excel workbook (multi-sheet)</option>
+          <option value="csv">CSV (separate files zipped)</option>
+        </select>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group" style="margin:0"><label>From</label><input type="date" id="exp-all-from" class="form-input"></div>
+        <div class="form-group" style="margin:0"><label>To</label><input type="date" id="exp-all-to" class="form-input"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:0.5rem;border-top:1px solid var(--color-border)">
+        <button class="btn-outline" onclick="closeModal('export-all-modal')">Cancel</button>
+        <button class="btn-primary" onclick="doExportAll()">⬇ Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="AdminReports.js"></script>
+<script src="admin_nav_session.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+  LandingFeatures.html — UGAT TrainTrack
+  Features page: detailed breakdown of all system capabilities.
+
+  Linked files:
+    Styles  : ../css/styles.css, Landing.css, LandingInner.css
+    Scripts : Landing.js
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="Landing.css">
+  <link rel="stylesheet" href="LandingInner.css">
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-logo-wrap">
+      <a href="Landing.html" class="nav-logo-link">
+        <img src="../images/logo.jpg" alt="UGAT Logo" class="nav-logo-img"
+             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" class="nav-logo-fallback" style="display:none">
+          <span>🌱</span><span class="logo-text">UGAT</span>
+        </div>
+      </a>
+    </div>
+    <ul class="nav-links" role="list">
+      <li><a href="Landing.html"         class="nav-link">Home</a></li>
+      <li><a href="LandingAbout.html"    class="nav-link">About</a></li>
+      <li><a href="LandingFeatures.html" class="nav-link active">Features</a></li>
+      <li><a href="LandingProducts.html" class="nav-link">Products</a></li>
+      <li><a href="LandingContact.html"  class="nav-link">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-nav-cta" onclick="goToLogin()">Create Account &nbsp;→</button>
+    </div>
+  </nav>
+
+  <section class="inner-hero">
+    <div class="inner-hero-text">
+      <p class="hero-sub">WHAT WE OFFER</p>
+      <h1 class="inner-title">System Features</h1>
+      <p class="inner-desc">Everything you need to manage agricultural training, from enrollment to certification — all in one platform.</p>
+    </div>
+  </section>
+
+  <main class="inner-content">
+    <div class="features-big-grid">
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">👥</div>
+        <h3>Trainee Management</h3>
+        <p>Register and store complete trainee profiles including personal info, educational background, classification (4Ps, OFW, TESDA alumni, etc.), and ID photos. Search, filter, and export records anytime.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">📋</div>
+        <h3>Workshop Management</h3>
+        <p>Create workshops with multiple sessions, set dates, assign facilitators, and manage slot availability. Trainees can browse and enroll directly through the system.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">✅</div>
+        <h3>Attendance Tracking</h3>
+        <p>Log session attendance as Present, Late, or Absent per trainee. View attendance rates, filter by workshop or date range, and export reports in one click.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">🏆</div>
+        <h3>Certifications</h3>
+        <p>The system automatically identifies trainees who completed all required sessions. Admins issue certificates with a single click — triggering an SMS confirmation to the trainee via Semaphore.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">🌾</div>
+        <h3>Farm Shop</h3>
+        <p>Trainees can browse and order farm products and training kits directly through the system. Includes category filtering, stock status badges, and add-to-cart functionality.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">📦</div>
+        <h3>Inventory Management</h3>
+        <p>Track all farm products and training kit stock levels. Get low-stock alerts before session days so you never run short on kits for enrolled trainees.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">📱</div>
+        <h3>SMS Notifications</h3>
+        <p>Automatic SMS messages are sent to trainees upon enrollment confirmation and certificate issuance using the Semaphore API — no manual texting needed.</p>
+      </div>
+
+      <div class="feature-big-card">
+        <div class="fbcard-icon">📊</div>
+        <h3>Reports & Export</h3>
+        <p>Export attendance records, trainee lists, and certificate logs. Designed to support TESDA compliance and other government reporting requirements.</p>
+      </div>
+
+    </div>
+
+    <div style="text-align:center; margin-top:2.5rem;">
+      <button class="btn-hero" onclick="goToLogin()">Start Using TrainTrack →</button>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="Landing.js"></script>
+</body>
+</html>

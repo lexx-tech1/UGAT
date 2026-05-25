@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — UGAT TrainTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="TraineeDashboard.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <nav class="app-nav">
+    <div class="nav-logo">
+      <a href="TraineeDashboard.html">
+        <img src="../../images/logo.jpg" alt="UGAT" class="nav-logo-img" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="TraineeDashboard.html" class="nav-link">Dashboard</a>
+      <a href="TraineeWorkshops.html" class="nav-link">My Workshops</a>
+      <a href="TraineeShop.html"      class="nav-link">Farm Shop</a>
+    </div>
+    <div class="nav-user">
+      <div class="user-dropdown-trigger" onclick="toggleUserMenu(event)">
+        <img src="" alt="" class="user-avatar">
+        <span class="user-dropdown-name">… <span class="user-caret">▾</span></span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dropdown-header">
+          <img src="" alt="" class="user-dropdown-avatar">
+          <div>
+            <div class="user-dropdown-fullname">Loading…</div>
+            <div class="user-dropdown-role">Trainee</div>
+          </div>
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <a href="profile.php" class="user-dropdown-item">My Profile</a>
+        <div class="user-dropdown-divider"></div>
+        <a href="../auth/Login.html" class="user-dropdown-item user-dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-content">
+
+    <!-- Page header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+      <div>
+        <h2 style="font-size:1.5rem;font-weight:700;color:var(--color-primary);margin:0">Notifications</h2>
+        <p style="font-size:0.85rem;color:#888;margin:0.2rem 0 0" id="notif-count">Loading…</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center">
+
+      <!-- Date filter -->
+      <select id="filter-date" onchange="applyFilters()"
+              style="padding:0.5rem 0.85rem;border:1.5px solid #e5e7eb;border-radius:8px;
+                     font-size:0.85rem;color:#555;background:#fff;cursor:pointer">
+        <option value="all">All Dates</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+        <option value="custom">Custom Range…</option>
+      </select>
+
+      <!-- Custom date range — hidden until "Custom Range" is selected -->
+      <div id="custom-date-range" style="display:none;gap:0.5rem;align-items:center;flex-wrap:wrap">
+        <input type="date" id="filter-from" onchange="applyFilters()"
+               style="padding:0.5rem 0.75rem;border:1.5px solid #e5e7eb;border-radius:8px;
+                      font-size:0.85rem;color:#555;background:#fff;cursor:pointer">
+        <span style="font-size:0.8rem;color:#888">to</span>
+        <input type="date" id="filter-to" onchange="applyFilters()"
+               style="padding:0.5rem 0.75rem;border:1.5px solid #e5e7eb;border-radius:8px;
+                      font-size:0.85rem;color:#555;background:#fff;cursor:pointer">
+      </div>
+
+      <!-- Type filter -->
+      <select id="filter-type" onchange="applyFilters()"
+              style="padding:0.5rem 0.85rem;border:1.5px solid #e5e7eb;border-radius:8px;
+                     font-size:0.85rem;color:#555;background:#fff;cursor:pointer">
+        <option value="all">All Types</option>
+        <option value="pending">Pending Enrollment</option>
+        <option value="enrolled">Enrollment Approved</option>
+        <option value="rejected">Enrollment Rejected</option>
+        <option value="certificate">Certification</option>
+      </select>
+
+      <!-- Clear filters -->
+      <button onclick="clearFilters()"
+              style="padding:0.5rem 0.85rem;border:1.5px solid #e5e7eb;border-radius:8px;
+                     font-size:0.85rem;color:#888;background:#fff;cursor:pointer">
+        Clear filters
+      </button>
+
+    </div>
+
+    <!-- Notifications card -->
+    <div style="background:#fff;border-radius:14px;border:1.5px solid #e5e7eb;
+                overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05)">
+      <div id="notif-list-inner">
+        <p style="color:#aaa;padding:2rem;text-align:center;font-size:0.9rem">Loading notifications…</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+let ALL_NOTIFS = [];
+
+const dotColors = {
+  green:  '#22c55e',
+  blue:   '#3b82f6',
+  yellow: '#f59e0b',
+  red:    '#ef4444',
+  orange: '#f59e0b',
+};
+
+function getTypeBadge(n) {
+  if (n.type === 'certificate') {
+    return `<span style="background:#dbeafe;color:#1e40af;font-size:0.7rem;font-weight:600;
+              padding:2px 8px;border-radius:20px">Certification</span>`;
+  }
+  if (n.status === 'pending') {
+    return `<span style="background:#fef3c7;color:#92400e;font-size:0.7rem;font-weight:600;
+              padding:2px 8px;border-radius:20px">Pending Enrollment</span>`;
+  }
+  if (n.status === 'enrolled') {
+    return `<span style="background:#dcfce7;color:#166534;font-size:0.7rem;font-weight:600;
+              padding:2px 8px;border-radius:20px">Enrollment Approved</span>`;
+  }
+  if (n.status === 'rejected') {
+    return `<span style="background:#fee2e2;color:#991b1b;font-size:0.7rem;font-weight:600;
+              padding:2px 8px;border-radius:20px">Enrollment Rejected</span>`;
+  }
+  return '';
+}
+
+function applyFilters() {
+  const dateFilter  = document.getElementById('filter-date').value;
+  const typeFilter  = document.getElementById('filter-type').value;
+  const customRange = document.getElementById('custom-date-range');
+  const now         = new Date();
+
+  // Show/hide custom date inputs
+  customRange.style.display = dateFilter === 'custom' ? 'flex' : 'none';
+
+  const filtered = ALL_NOTIFS.filter(n => {
+    const d = new Date(n.date);
+
+    // ── Date filter ──
+    if (dateFilter === 'today') {
+      if (d.toDateString() !== now.toDateString()) return false;
+    } else if (dateFilter === 'week') {
+      const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7);
+      if (d < weekAgo) return false;
+    } else if (dateFilter === 'month') {
+      if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+    } else if (dateFilter === 'year') {
+      if (d.getFullYear() !== now.getFullYear()) return false;
+    } else if (dateFilter === 'custom') {
+      const from = document.getElementById('filter-from').value;
+      const to   = document.getElementById('filter-to').value;
+      if (from && d < new Date(from)) return false;
+      if (to   && d > new Date(to + 'T23:59:59')) return false;
+    }
+
+    // ── Type filter ──
+    if (typeFilter !== 'all') {
+      if (typeFilter === 'certificate' && n.type !== 'certificate') return false;
+      if (typeFilter !== 'certificate' && n.status !== typeFilter)  return false;
+    }
+
+    return true;
+  });
+
+  renderList(filtered);
+}
+
+function clearFilters() {
+  document.getElementById('filter-date').value = 'all';
+  document.getElementById('filter-type').value = 'all';
+  document.getElementById('filter-from').value = '';
+  document.getElementById('filter-to').value   = '';
+  document.getElementById('custom-date-range').style.display = 'none';
+  renderList(ALL_NOTIFS);
+}
+
+function renderList(notifs) {
+  const inner = document.getElementById('notif-list-inner');
+  const count = document.getElementById('notif-count');
+
+  count.textContent = `${notifs.length} notification${notifs.length !== 1 ? 's' : ''}`;
+
+  if (!notifs.length) {
+    inner.innerHTML = `
+      <div style="padding:3rem;text-align:center;color:#aaa">
+        <div style="font-size:2rem;margin-bottom:0.5rem">🔔</div>
+        <p style="font-size:0.9rem">No notifications match your filters.</p>
+      </div>`;
+    return;
+  }
+
+  inner.innerHTML = notifs.map((n, i) => {
+    const dateStr = new Date(n.date).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    const timeStr = new Date(n.date).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+    const dot     = dotColors[n.dot] || '#aaa';
+    const isLast  = i === notifs.length - 1;
+
+    return `
+    <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.5rem;
+                ${isLast ? '' : 'border-bottom:1px solid #f3f4f6;'}">
+      <div style="margin-top:5px;flex-shrink:0">
+        <span style="display:block;width:10px;height:10px;border-radius:50%;background:${dot}"></span>
+      </div>
+      <div style="flex:1">
+        <p style="margin:0 0 0.3rem;font-size:0.9rem;color:#1f2937;font-weight:500">${n.message}</p>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          ${getTypeBadge(n)}
+          <span style="font-size:0.75rem;color:#9ca3af">${dateStr} · ${timeStr}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+  try {
+    const res  = await fetch('get_trainee_dashboard.php?t=' + Date.now());
+    const data = await res.json();
+
+    if (!data.success) { window.location.href = '../auth/Login.html'; return; }
+
+    ALL_NOTIFS = data.notifications || [];
+
+    if (!ALL_NOTIFS.length) {
+      document.getElementById('notif-list-inner').innerHTML = `
+        <div style="padding:3rem;text-align:center;color:#aaa">
+          <div style="font-size:2rem;margin-bottom:0.5rem">🔔</div>
+          <p style="font-size:0.9rem">No notifications yet.</p>
+        </div>`;
+      document.getElementById('notif-count').textContent = '0 notifications';
+      return;
+    }
+
+    renderList(ALL_NOTIFS);
+  } catch (err) {
+    console.error(err);
+  }
+});
+</script>
+<script src="nav_session.js"></script>
+</body>
+</html>
